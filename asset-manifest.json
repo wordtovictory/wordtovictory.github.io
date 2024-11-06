@@ -1,0 +1,16 @@
+{
+  "files": {
+    "main.css": "/react-gh-pages/static/css/main.0bcabfab.css",
+    "main.js": "/react-gh-pages/static/js/main.cb3996ec.js",
+    "static/js/453.8ab44547.chunk.js": "/react-gh-pages/static/js/453.8ab44547.chunk.js",
+    "static/media/BibleTrack_cropped.png": "/react-gh-pages/static/media/BibleTrack_cropped.bcf078ae26321b471dcb.png",
+    "index.html": "/react-gh-pages/index.html",
+    "main.0bcabfab.css.map": "/react-gh-pages/static/css/main.0bcabfab.css.map",
+    "main.cb3996ec.js.map": "/react-gh-pages/static/js/main.cb3996ec.js.map",
+    "453.8ab44547.chunk.js.map": "/react-gh-pages/static/js/453.8ab44547.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.0bcabfab.css",
+    "static/js/main.cb3996ec.js"
+  ]
+}
