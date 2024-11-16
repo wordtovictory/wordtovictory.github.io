@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useRef} from 'react';
 import Button from "@mui/material/Button";
 import {Box} from "@mui/material";
 import exportFromJSON from "export-from-json";
@@ -6,6 +6,7 @@ import exportFromJSON from "export-from-json";
 export default function ControlPanel(props) {
 
     const {readStatus, setReadStatus} = props;
+    const inputRef = useRef(null);
 
     const handleSave = () => {
         const data = [{readStatus: readStatus}];
@@ -13,10 +14,8 @@ export default function ControlPanel(props) {
         const exportType = exportFromJSON.types.json;
         exportFromJSON({ data, fileName, exportType });
     };
-    const handleLoad = (event)=>{
-        console.log(event.target.files.length);
+    const handleInputLoad = (event)=>{
         if(event.target.files.length){
-            console.log(event.target.files[0]);
             event.target.files[0]
                 .text()
                 .then((data) => JSON.parse(data))
@@ -26,6 +25,11 @@ export default function ControlPanel(props) {
         }
     };
 
+    const handleLoad = (e) => {
+        if (!inputRef || !inputRef.current) return;
+        inputRef.current.click();
+    };
+
     return (
         <div>
             {/*<Button variant={"contained"}>Clear All</Button>*/}
@@ -33,11 +37,12 @@ export default function ControlPanel(props) {
             <Box sx={{
                 flex: '0 0 32px'
             }}></Box>
-            <Button variant={"contained"}>
+            <Button variant={"contained"} onClick={handleLoad}>
                 Load bible study record
                 <input
+                    ref={inputRef}
                     type="file"
-                    onChange={handleLoad}
+                    onChange={handleInputLoad}
                     accept=".json"
                     hidden
                 />
