@@ -56,7 +56,7 @@ function Dashboard() {
           <Box sx={{
               flex: '0 0 32px'
           }}></Box>
-          <ControlPanel/>
+          <ControlPanel readStatus={readStatus} setReadStatus={setReadStatus}/>
       </Box>
   );
 }
