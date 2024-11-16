@@ -12,15 +12,18 @@ export default function ControlPanel(props) {
         const data = [{readStatus: readStatus}];
         const fileName = "application-state";
         const exportType = exportFromJSON.types.json;
-        exportFromJSON({ data, fileName, exportType });
+        exportFromJSON({data, fileName, exportType});
     };
-    const handleInputLoad = (event)=>{
-        if(event.target.files.length){
+    const handleInputLoad = (event) => {
+        if (event.target.files.length) {
             event.target.files[0]
                 .text()
                 .then((data) => JSON.parse(data))
                 .then((data) => {
                     setReadStatus(data[0].readStatus);
+                    Object.entries(data[0].readStatus).forEach(
+                        ([key, value]) => localStorage.setItem(key, value)
+                    );
                 });
         }
     };
