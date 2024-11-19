@@ -11,7 +11,7 @@ function App() {
         <Box sx={{
             padding: '20px',
             margin: 'auto',
-            maxWidth: '2000px'
+            maxWidth: '1800px'
         }}>
             <Dashboard/>
         </Box>

@@ -49,7 +49,10 @@ export default function BookRecord(props) {
                           disableElevation
                           value={chapterKey}
                           sx={{
-                              minWidth: 42.81,
+                              minWidth: 38,
+                              maxWidth: 38,
+                              minHeight: 28,
+                              maxHeight: 28,
                           }}
                           onClick={toggleRead}>{chapterNum}</Button>
                   }
