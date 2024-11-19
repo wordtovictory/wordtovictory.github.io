@@ -2,9 +2,14 @@ import React, {useRef} from 'react';
 import Button from "@mui/material/Button";
 import {Box} from "@mui/material";
 import exportFromJSON from "export-from-json";
-import { BOOKS } from '../bible/constants.ts';
+import {BOOKS} from '../bible/constants.ts';
 
 export default function ControlPanel(props) {
+
+    const controlPanelButtonStyles = {
+        minWidth: 250,
+        maxWidth: 250,
+    }
 
     const {readStatus, setReadStatus} = props;
     const inputRef = useRef(null);
@@ -34,12 +39,12 @@ export default function ControlPanel(props) {
         inputRef.current.click();
     };
 
-    const handleClearAll= () => {
+    const handleClearAll = () => {
         console.log("Clearing all");
         const readStatus = {}
         BOOKS.map(book => {
-            for (let i = 1; i < book.numChapters+1; i++) {
-                const chapterKey = book.name+"_"+i;
+            for (let i = 1; i < book.numChapters + 1; i++) {
+                const chapterKey = book.name + "_" + i;
                 // readStatus[chapterKey] = false;
                 localStorage.setItem(chapterKey, "false");
             }
@@ -50,16 +55,21 @@ export default function ControlPanel(props) {
 
 
     return (
-        <div>
-            <Button variant={"contained"} onClick={handleClearAll}>Clear All</Button>
+        <Box sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center'
+        }}>
+            <Button variant={"contained"} onClick={handleClearAll} sx={controlPanelButtonStyles}>Clear All</Button>
             <Box sx={{
-                flex: '0 0 32px'
+                flex: '0 0 12px'
             }}></Box>
-            <Button variant={"contained"} onClick={handleSave}>Save bible study record</Button>
+            <Button variant={"contained"} onClick={handleSave} sx={controlPanelButtonStyles}>Save bible study record</Button>
             <Box sx={{
-                flex: '0 0 32px'
+                flex: '0 0 12px'
             }}></Box>
-            <Button variant={"contained"} onClick={handleLoad}>
+            <Button variant={"contained"} onClick={handleLoad} sx={controlPanelButtonStyles}>
                 Load bible study record
                 <input
                     ref={inputRef}
@@ -69,7 +79,6 @@ export default function ControlPanel(props) {
                     hidden
                 />
             </Button>
-
-        </div>
+        </Box>
     );
 };
