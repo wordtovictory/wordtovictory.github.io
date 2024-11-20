@@ -5,19 +5,19 @@ import AppMenu from "./header/AppMenu";
 import Footer from "./header/Footer";
 
 function App() {
-  return (
-    <div className="App">
-        <AppMenu/>
-        <Box sx={{
-            padding: '20px',
-            margin: 'auto',
-            maxWidth: '1800px'
-        }}>
-            <Dashboard/>
-        </Box>
-        {/*<Footer/>*/}
-    </div>
-  );
+    return (
+        <div className="App">
+            <AppMenu/>
+            <Box sx={{
+                padding: '20px',
+                margin: 'auto',
+                maxWidth: '1800px'
+            }}>
+                <Dashboard/>
+            </Box>
+            <Footer/>
+        </div>
+    );
 }
 
 export default App;
