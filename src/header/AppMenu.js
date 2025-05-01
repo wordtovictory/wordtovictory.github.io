@@ -4,10 +4,11 @@ import Toolbar from '@mui/material/Toolbar';
 import Container from '@mui/material/Container';
 import Button from '@mui/material/Button';
 import { useTheme } from '../theme/ThemeContext';
+import { appThemes } from '../theme/themeConfig';
 
 function AppMenu() {
-    const { currentTheme, toggleTheme, themes } = useTheme();
-    const isDarkMode = currentTheme === themes.dark;
+    const { currentTheme, toggleTheme } = useTheme();
+    const isDarkMode = currentTheme === appThemes.darkOrange;
     
     return (
         // <AppBar position="static" color="white">
@@ -15,8 +16,8 @@ function AppMenu() {
             position="static" 
             color="transparent"
             sx={{ 
-                backgroundColor: currentTheme.appMenu.backgroundColor,
-                color: currentTheme.appMenu.textColor
+                backgroundColor: currentTheme.background,
+                color: currentTheme.text
             }}
         >
             <Container maxWidth="xl">

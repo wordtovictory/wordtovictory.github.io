@@ -43,23 +43,19 @@ export default function BookRecord(props) {
         return isRead? "contained" : "outlined";
     };
 
-    const getButtonColor = (chapterKey) => {
-        return currentTheme.buttonColor;
-    };
-
     return (
         <Box sx={bookRecordstyle}>
             <Box sx={bookNameStyle}>{book.name}</Box>
             <Box sx={{ display: 'flex', flexWrap: 'wrap', flex: 1 }}>
                 {Array.from({length: book.numChapters}, (_, i) => i + 1).map(chapter => {
                     const chapterKey = book.name + "_" + chapter;
+                    const isRead = getReadStatus(chapterKey);
                     return (
                         <Button
                             key={chapterKey}
                             value={chapterKey}
                             onClick={toggleRead}
-                            variant={getButtonVariant(chapterKey)}
-                            color={getButtonColor(chapterKey)}
+                            variant={isRead ? "contained" : "outlined"}
                             sx={{
                                 minWidth: { xs: 25, sm: 25, lg: 38 },
                                 maxWidth: { xs: 25, sm: 25, lg: 38 },
@@ -71,8 +67,12 @@ export default function BookRecord(props) {
                                 fontSize: { xs: '0.7rem', sm: '0.7rem', lg: '0.875rem' },
                                 lineHeight: 1,
                                 boxShadow: 'none',
+                                color: currentTheme.button.text,
+                                borderColor: currentTheme.button.border,
+                                backgroundColor: isRead ? currentTheme.button.background.read : currentTheme.button.background.default,
                                 '&:hover': {
-                                    boxShadow: 'none'
+                                    boxShadow: 'none',
+                                    backgroundColor: isRead ? currentTheme.button.background.read : currentTheme.button.background.hover
                                 }
                             }}
                         >
