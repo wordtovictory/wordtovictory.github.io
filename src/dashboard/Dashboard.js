@@ -1,7 +1,7 @@
 import '../App.css';
 import {BOOKS} from '../bible/constants.ts';
 import {useEffect, useState} from "react";
-import {Box, Grid} from "@mui/material";
+import {Box, Container} from "@mui/material";
 import BookRecord from "./BookRecord";
 import StatisticsPanel from "./StatisticsPanel";
 import ControlPanel from "./ControlPanel";
@@ -29,37 +29,33 @@ function Dashboard() {
     }, [])
 
     return (
-        <Box sx={{
-            display: 'flex',
-            alignItems: 'center',
-            flexDirection: 'column'
-        }}>
-            <Box sx={statisticsPanelStyle}>
-                <StatisticsPanel readStatus={readStatus}/>
+        <Container maxWidth="xl">
+            <Box sx={{ width: '100%', py: 2 }}>
+                <Box sx={statisticsPanelStyle}>
+                    <StatisticsPanel readStatus={readStatus}/>
+                </Box>
+                <Box sx={{ height: 32 }} />
+                <Box sx={{ 
+                    display: 'flex',
+                    flexDirection: { xs: 'column', md: 'row' },
+                    gap: 2
+                }}>
+                    <Box sx={{ width: { xs: '100%', md: '50%' } }}>
+                        {BOOKS1.map(book =>
+                            <BookRecord key={book.name} book={book} readStatus={readStatus} setReadStatus={setReadStatus}/>
+                        )}
+                    </Box>
+                    <Box sx={{ width: { xs: '100%', md: '50%' } }}>
+                        {BOOKS2.map(book =>
+                            <BookRecord key={book.name} book={book} readStatus={readStatus} setReadStatus={setReadStatus}/>
+                        )}
+                    </Box>
+                </Box>
+                <Box sx={{ height: 32 }} />
+                <ControlPanel readStatus={readStatus} setReadStatus={setReadStatus}/>
+                <Box sx={{ height: 32 }} />
             </Box>
-            <Box sx={{
-                flex: '0 0 32px'
-            }}></Box>
-            <Grid container spacing={1}>
-                <Grid item xs={6}>
-                    {BOOKS1.map(book =>
-                        <BookRecord key={book.name} book={book} readStatus={readStatus} setReadStatus={setReadStatus}/>
-                    )}
-                </Grid>
-                <Grid item xs={6}>
-                    {BOOKS2.map(book =>
-                        <BookRecord key={book.name} book={book} readStatus={readStatus} setReadStatus={setReadStatus}/>
-                    )}
-                </Grid>
-            </Grid>
-            <Box sx={{
-                flex: '0 0 32px'
-            }}></Box>
-            <ControlPanel readStatus={readStatus} setReadStatus={setReadStatus}/>
-            <Box sx={{
-                flex: '0 0 32px'
-            }}></Box>
-        </Box>
+        </Container>
     );
 }
 

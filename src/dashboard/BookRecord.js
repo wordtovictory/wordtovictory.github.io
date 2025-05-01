@@ -7,8 +7,18 @@ export default function BookRecord(props) {
     const { currentTheme } = useTheme();
     const {book, readStatus, setReadStatus} = props;
 
-    const bookRecordstyle = {display: 'flex', backgroundColor: currentTheme.background};
-    const bookNameStyle = {flex: '0 0 120px', color: currentTheme.text}
+    const bookRecordstyle = {
+        display: 'flex',
+        backgroundColor: currentTheme.background,
+        alignItems: 'flex-start'
+    };
+    const bookNameStyle = { 
+        width: 120,
+        minWidth: 120,
+        color: currentTheme.text,
+        textAlign: 'right',
+        pr: 2
+    }
 
     const toggleRead = (event) => {
         const chapterKey = event.currentTarget.value;
@@ -36,7 +46,7 @@ export default function BookRecord(props) {
     return (
         <Box sx={bookRecordstyle}>
             <Box sx={bookNameStyle}>{book.name}</Box>
-            <Box>
+            <Box sx={{ display: 'flex', flexWrap: 'wrap' }}>
                 {Array.from({length: Math.ceil(book.numChapters)}, (_, i) => {
                         const chapterNum = i + 1;
                         const chapterKey = book.name + "_" + chapterNum;
