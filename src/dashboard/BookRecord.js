@@ -2,9 +2,11 @@ import '../App.css';
 import Button from '@mui/material/Button';
 import Box from "@mui/material/Box";
 import { useTheme } from '../theme/ThemeContext';
+import { useTheme as useMuiTheme } from '@mui/material/styles';
 
 export default function BookRecord(props) {
     const { currentTheme } = useTheme();
+    const muiTheme = useMuiTheme();
     const {book, readStatus, setReadStatus} = props;
 
     const bookRecordstyle = {
@@ -14,11 +16,12 @@ export default function BookRecord(props) {
         width: '100%'
     };
     const bookNameStyle = { 
-        width: 120,
-        minWidth: 120,
+        width: { xs: 80, sm: 80, lg: 120 },
+        minWidth: { xs: 80, sm: 80, lg: 120 },
         color: currentTheme.text,
         textAlign: 'right',
-        pr: 2
+        pr: { xs: 1.3, sm: 1.3, lg: 2 },
+        fontSize: { xs: '0.8rem', sm: '0.8rem', lg: '1rem' }
     }
 
     const toggleRead = (event) => {
@@ -58,13 +61,19 @@ export default function BookRecord(props) {
                             variant={getButtonVariant(chapterKey)}
                             color={getButtonColor(chapterKey)}
                             sx={{
-                                minWidth: 38,
-                                maxWidth: 38,
-                                minHeight: 28,
-                                maxHeight: 28,
+                                minWidth: { xs: 25, sm: 25, lg: 38 },
+                                maxWidth: { xs: 25, sm: 25, lg: 38 },
+                                minHeight: { xs: 19, sm: 19, lg: 28 },
+                                maxHeight: { xs: 19, sm: 19, lg: 28 },
                                 p: 0,
                                 m: 0,
-                                borderRadius: 0
+                                borderRadius: 0,
+                                fontSize: { xs: '0.7rem', sm: '0.7rem', lg: '0.875rem' },
+                                lineHeight: 1,
+                                boxShadow: 'none',
+                                '&:hover': {
+                                    boxShadow: 'none'
+                                }
                             }}
                         >
                             {chapter}
