@@ -15,7 +15,6 @@ const statisticsPanelStyle = {
 };
 
 function Dashboard() {
-
     const [readStatus, setReadStatus] = useState({});
 
     useEffect(() => {

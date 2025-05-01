@@ -3,16 +3,25 @@ import Button from "@mui/material/Button";
 import {Box} from "@mui/material";
 import exportFromJSON from "export-from-json";
 import {BOOKS} from '../bible/constants.ts';
+import { useTheme } from '../theme/ThemeContext';
 
 export default function ControlPanel(props) {
+    const { currentTheme } = useTheme();
+    const {readStatus, setReadStatus} = props;
+    const inputRef = useRef(null);
+
+    const getButtonColor = () => {
+        return currentTheme.buttonColor;
+    };
 
     const controlPanelButtonStyles = {
         minWidth: 250,
         maxWidth: 250,
+        color: currentTheme.text,
+        '&:hover': {
+            color: currentTheme.text
+        }
     }
-
-    const {readStatus, setReadStatus} = props;
-    const inputRef = useRef(null);
 
     const handleSave = () => {
         const data = [{readStatus: readStatus}];
@@ -20,6 +29,7 @@ export default function ControlPanel(props) {
         const exportType = exportFromJSON.types.json;
         exportFromJSON({data, fileName, exportType});
     };
+
     const handleInputLoad = (event) => {
         if (event.target.files.length) {
             event.target.files[0]
@@ -45,7 +55,6 @@ export default function ControlPanel(props) {
         BOOKS.map(book => {
             for (let i = 1; i < book.numChapters + 1; i++) {
                 const chapterKey = book.name + "_" + i;
-                // readStatus[chapterKey] = false;
                 localStorage.setItem(chapterKey, "false");
             }
         })
@@ -53,23 +62,23 @@ export default function ControlPanel(props) {
         setReadStatus(readStatus);
     };
 
-
     return (
         <Box sx={{
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
-            justifyContent: 'center'
+            justifyContent: 'center',
+            backgroundColor: currentTheme.background
         }}>
-            <Button variant={"contained"} onClick={handleClearAll} sx={controlPanelButtonStyles}>Clear All</Button>
+            <Button variant={"contained"} color={getButtonColor()} onClick={handleClearAll} sx={controlPanelButtonStyles}>Clear All</Button>
             <Box sx={{
                 flex: '0 0 12px'
             }}></Box>
-            <Button variant={"contained"} onClick={handleSave} sx={controlPanelButtonStyles}>Save bible study record</Button>
+            <Button variant={"contained"} color={getButtonColor()} onClick={handleSave} sx={controlPanelButtonStyles}>Save bible study record</Button>
             <Box sx={{
                 flex: '0 0 12px'
             }}></Box>
-            <Button variant={"contained"} onClick={handleLoad} sx={controlPanelButtonStyles}>
+            <Button variant={"contained"} color={getButtonColor()} onClick={handleLoad} sx={controlPanelButtonStyles}>
                 Load bible study record
                 <input
                     ref={inputRef}
