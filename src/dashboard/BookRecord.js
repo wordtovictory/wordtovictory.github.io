@@ -48,29 +48,29 @@ export default function BookRecord(props) {
         <Box sx={bookRecordstyle}>
             <Box sx={bookNameStyle}>{book.name}</Box>
             <Box sx={{ display: 'flex', flexWrap: 'wrap', flex: 1 }}>
-                {Array.from({length: Math.ceil(book.numChapters)}, (_, i) => {
-                        const chapterNum = i + 1;
-                        const chapterKey = book.name + "_" + chapterNum;
-                        return <Button
+                {Array.from({length: book.numChapters}, (_, i) => i + 1).map(chapter => {
+                    const chapterKey = book.name + "_" + chapter;
+                    return (
+                        <Button
                             key={chapterKey}
-                            size="small"
+                            value={chapterKey}
+                            onClick={toggleRead}
                             variant={getButtonVariant(chapterKey)}
                             color={getButtonColor(chapterKey)}
-                            disableElevation
-                            value={chapterKey}
                             sx={{
                                 minWidth: 38,
                                 maxWidth: 38,
                                 minHeight: 28,
                                 maxHeight: 28,
-                                color: currentTheme.text,
-                                '&:hover': {
-                                    color: currentTheme.text
-                                }
+                                p: 0,
+                                m: 0,
+                                borderRadius: 0
                             }}
-                            onClick={toggleRead}>{chapterNum}</Button>
-                    }
-                )}
+                        >
+                            {chapter}
+                        </Button>
+                    );
+                })}
             </Box>
         </Box>
     );
