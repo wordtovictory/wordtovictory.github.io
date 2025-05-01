@@ -4,10 +4,9 @@ import Toolbar from '@mui/material/Toolbar';
 import Container from '@mui/material/Container';
 import Button from '@mui/material/Button';
 import { useTheme } from '../theme/ThemeContext';
-import { themes } from '../theme/theme';
 
 function AppMenu() {
-    const { currentTheme, toggleTheme } = useTheme();
+    const { currentTheme, toggleTheme, themes } = useTheme();
     const isDarkMode = currentTheme === themes.dark;
     
     return (

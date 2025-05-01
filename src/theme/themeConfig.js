@@ -1,4 +1,7 @@
-export const themeConfig = {
+import logo from '../BibleTrack_cropped.png';
+import logoDark from '../BibleTrack_cropped_dark.png';
+
+export const themes = {
     orange: {
         primary: '#ed6c02', // Material-UI warning color
         text: '#8B4000',    // Dark orange
@@ -13,7 +16,8 @@ export const themeConfig = {
         footer: {
             backgroundColor: '#eeeeee',
             textColor: '#555555'
-        }
+        },
+        logo: logo
     },
     blue: {
         primary: '#1976d2', // Material-UI primary color
@@ -29,7 +33,8 @@ export const themeConfig = {
         footer: {
             backgroundColor: '#eeeeee',
             textColor: '#555555'
-        }
+        },
+        logo: logo
     },
     dark: {
         primary: '#64b5f6', // Light blue - good for both buttons and progress
@@ -45,9 +50,10 @@ export const themeConfig = {
         footer: {
             backgroundColor: '#121212',
             textColor: '#ffffff'
-        }
+        },
+        logo: logoDark
     }
 };
 
 // Current theme - can be changed to switch themes
-export const currentTheme = themeConfig.dark; 
+export const currentTheme = themes.dark; 
