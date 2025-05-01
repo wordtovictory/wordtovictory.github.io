@@ -16,12 +16,11 @@ export default function BookRecord(props) {
         width: '100%'
     };
     const bookNameStyle = { 
-        width: { xs: 80, sm: 80, lg: 120 },
-        minWidth: { xs: 80, sm: 80, lg: 120 },
+        width: 120,
+        minWidth: 120,
         color: currentTheme.text,
         textAlign: 'right',
-        pr: { xs: 1.3, sm: 1.3, lg: 2 },
-        fontSize: { xs: '0.8rem', sm: '0.8rem', lg: '1rem' }
+        pr: 2
     }
 
     const toggleRead = (event) => {
@@ -57,10 +56,10 @@ export default function BookRecord(props) {
                             onClick={toggleRead}
                             variant={isRead ? "contained" : "outlined"}
                             sx={{
-                                minWidth: { xs: 25, sm: 25, lg: 38 },
-                                maxWidth: { xs: 25, sm: 25, lg: 38 },
-                                minHeight: { xs: 19, sm: 19, lg: 28 },
-                                maxHeight: { xs: 19, sm: 19, lg: 28 },
+                                minWidth: 38,
+                                maxWidth: 38,
+                                minHeight: 28,
+                                maxHeight: 28,
                                 p: 0,
                                 m: 0,
                                 borderRadius: 0,
