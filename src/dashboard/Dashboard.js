@@ -29,8 +29,8 @@ function Dashboard() {
     }, [])
 
     return (
-        <Container maxWidth="xl">
-            <Box sx={{ width: '100%', py: 2 }}>
+        <Container maxWidth="xl" disableGutters sx={{ width: '100%', px: 0 }}>
+            <Box sx={{ width: '100%', py: 2, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                 <Box sx={statisticsPanelStyle}>
                     <StatisticsPanel readStatus={readStatus}/>
                 </Box>
@@ -38,14 +38,22 @@ function Dashboard() {
                 <Box sx={{ 
                     display: 'flex',
                     flexDirection: { xs: 'column', md: 'row' },
-                    gap: 2
+                    gap: 2,
+                    width: '100%',
+                    justifyContent: 'center'
                 }}>
-                    <Box sx={{ width: { xs: '100%', md: '50%' } }}>
+                    <Box sx={{ 
+                        width: { xs: '100%', md: '896px' },
+                        minWidth: { xs: '100%', md: '896px' }
+                    }}>
                         {BOOKS1.map(book =>
                             <BookRecord key={book.name} book={book} readStatus={readStatus} setReadStatus={setReadStatus}/>
                         )}
                     </Box>
-                    <Box sx={{ width: { xs: '100%', md: '50%' } }}>
+                    <Box sx={{ 
+                        width: { xs: '100%', md: '896px' },
+                        minWidth: { xs: '100%', md: '896px' }
+                    }}>
                         {BOOKS2.map(book =>
                             <BookRecord key={book.name} book={book} readStatus={readStatus} setReadStatus={setReadStatus}/>
                         )}

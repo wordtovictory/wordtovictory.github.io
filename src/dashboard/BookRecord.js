@@ -10,7 +10,8 @@ export default function BookRecord(props) {
     const bookRecordstyle = {
         display: 'flex',
         backgroundColor: currentTheme.background,
-        alignItems: 'flex-start'
+        alignItems: 'flex-start',
+        width: '100%'
     };
     const bookNameStyle = { 
         width: 120,
@@ -46,7 +47,7 @@ export default function BookRecord(props) {
     return (
         <Box sx={bookRecordstyle}>
             <Box sx={bookNameStyle}>{book.name}</Box>
-            <Box sx={{ display: 'flex', flexWrap: 'wrap' }}>
+            <Box sx={{ display: 'flex', flexWrap: 'wrap', flex: 1 }}>
                 {Array.from({length: Math.ceil(book.numChapters)}, (_, i) => {
                         const chapterNum = i + 1;
                         const chapterKey = book.name + "_" + chapterNum;
