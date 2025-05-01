@@ -41,7 +41,7 @@ function Dashboard() {
             <Box sx={{
                 flex: '0 0 32px'
             }}></Box>
-            <Grid container spacing={1}>
+            <Grid container spacing={1} className="bible-books-grid">
                 <Grid item xs={6}>
                     {BOOKS1.map(book =>
                         <BookRecord key={book.name} book={book} readStatus={readStatus} setReadStatus={setReadStatus}/>
