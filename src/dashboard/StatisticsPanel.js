@@ -27,9 +27,13 @@ const categories = {
         name: "Wisdom",
         books: BOOKS.slice(17, 22)  // Job to Song of Songs
     },
-    prophets: {
-        name: "Prophets",
-        books: BOOKS.slice(22, 39)  // Isaiah to Malachi
+    majorProphets: {
+        name: "Major Prophets",
+        books: BOOKS.slice(22, 27)  // Isaiah to Daniel
+    },
+    minorProphets: {
+        name: "Minor Prophets",
+        books: BOOKS.slice(27, 39)  // Hosea to Malachi
     },
     gospels: {
         name: "The Gospels",
@@ -140,21 +144,22 @@ export default function StatisticsPanel(props) {
                 <StatItem title={categoryStats[1].name} stats={categoryStats[1].stats} />
             </Box>
 
-            {/* Row 2: Law, History, Wisdom, Prophets */}
+            {/* Row 2: Law, History, Wisdom, Major Prophets, Minor Prophets */}
             <Box sx={{ display: 'flex', justifyContent: 'center', gap: 2, mb: 2 }}>
                 <StatItem title={categoryStats[2].name} stats={categoryStats[2].stats} />
                 <StatItem title={categoryStats[3].name} stats={categoryStats[3].stats} />
                 <StatItem title={categoryStats[4].name} stats={categoryStats[4].stats} />
                 <StatItem title={categoryStats[5].name} stats={categoryStats[5].stats} />
+                <StatItem title={categoryStats[6].name} stats={categoryStats[6].stats} />
             </Box>
 
             {/* Row 3: Gospels, Church History, Paul's Letters, General Letters, Prophecy */}
             <Box sx={{ display: 'flex', justifyContent: 'center', gap: 2 }}>
-                <StatItem title={categoryStats[6].name} stats={categoryStats[6].stats} />
                 <StatItem title={categoryStats[7].name} stats={categoryStats[7].stats} />
                 <StatItem title={categoryStats[8].name} stats={categoryStats[8].stats} />
                 <StatItem title={categoryStats[9].name} stats={categoryStats[9].stats} />
                 <StatItem title={categoryStats[10].name} stats={categoryStats[10].stats} />
+                <StatItem title={categoryStats[11].name} stats={categoryStats[11].stats} />
             </Box>
         </Box>
     );
