@@ -31,16 +31,23 @@ function Dashboard() {
     }, [])
 
     return (
-        <Container maxWidth="xl" disableGutters sx={{
+        <Container maxWidth="xl" sx={{
             width: '100%',
-            px: 0,
-            backgroundColor: currentTheme.background
+            backgroundColor: currentTheme.background,
+            marginTop: '64px',
+            minHeight: 'calc(100vh - 64px - 48px)'
         }}>
-            <Box sx={{ width: '100%', py: 2, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            <Box sx={{ 
+                width: '100%', 
+                py: 2, 
+                display: 'flex', 
+                flexDirection: 'column', 
+                alignItems: 'center',
+                gap: 8
+            }}>
                 <Box sx={statisticsPanelStyle}>
                     <StatisticsPanel readStatus={readStatus}/>
                 </Box>
-                <Box sx={{ height: 32 }} />
                 <Box sx={{
                     display: 'flex',
                     flexDirection: { xs: 'column', md: 'row' },
@@ -65,7 +72,7 @@ function Dashboard() {
                         )}
                     </Box>
                 </Box>
-                <Box sx={{ height: 32 }} />
+                {/* <Box sx={{ height: 32 }} /> */}
                 <ControlPanel readStatus={readStatus} setReadStatus={setReadStatus}/>
                 <Box sx={{ height: 32 }} />
             </Box>
