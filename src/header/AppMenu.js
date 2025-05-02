@@ -10,18 +10,28 @@ import {
     IconButton,
     Menu,
     MenuItem,
-    Button
+    Button,
+    Drawer,
+    List,
+    ListItem,
+    ListItemIcon,
+    ListItemText,
+    Divider
 } from '@mui/material';
 import Brightness4Icon from '@mui/icons-material/Brightness4';
 import Brightness7Icon from '@mui/icons-material/Brightness7';
 import MenuIcon from '@mui/icons-material/Menu';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import DashboardIcon from '@mui/icons-material/Dashboard';
+import BarChartIcon from '@mui/icons-material/BarChart';
 import { useNavigate } from 'react-router-dom';
 
 export default function AppMenu({ isLoggedIn, setIsLoggedIn }) {
     const { currentTheme, toggleTheme, fillBoxes, toggleFillBoxes } = useTheme();
     const isDarkMode = currentTheme === appThemes.darkOrange;
     const [anchorEl, setAnchorEl] = useState(null);
+    const [drawerOpen, setDrawerOpen] = useState(false);
     const open = Boolean(anchorEl);
     const navigate = useNavigate();
 
@@ -34,14 +44,62 @@ export default function AppMenu({ isLoggedIn, setIsLoggedIn }) {
     };
 
     const handleLogin = () => {
-        handleClose();
         navigate('/login');
     };
 
     const handleLogout = () => {
         localStorage.removeItem('isLoggedIn');
         setIsLoggedIn(false);
+        navigate('/login');
+        handleClose();
     };
+
+    const toggleDrawer = (open) => (event) => {
+        if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
+            return;
+        }
+        setDrawerOpen(open);
+    };
+
+    const menuItems = [
+        { text: 'Dashboard', icon: <DashboardIcon />, path: '/dashboard' },
+        { text: 'Statistics', icon: <BarChartIcon />, path: '/statistics' }
+    ];
+
+    const drawer = (
+        <Box
+            sx={{
+                width: 250,
+                backgroundColor: currentTheme.appMenu.backgroundColor,
+                color: currentTheme.appMenu.textColor,
+                height: '100%'
+            }}
+            role="presentation"
+            onClick={toggleDrawer(false)}
+            onKeyDown={toggleDrawer(false)}
+        >
+            <List>
+                {menuItems.map((item) => (
+                    <ListItem 
+                        button 
+                        key={item.text}
+                        onClick={() => navigate(item.path)}
+                        sx={{
+                            '&:hover': {
+                                backgroundColor: currentTheme.button.background.hover
+                            }
+                        }}
+                    >
+                        <ListItemIcon sx={{ color: currentTheme.appMenu.textColor }}>
+                            {item.icon}
+                        </ListItemIcon>
+                        <ListItemText primary={item.text} />
+                    </ListItem>
+                ))}
+            </List>
+            <Divider sx={{ backgroundColor: currentTheme.button.border }} />
+        </Box>
+    );
 
     return (
         <AppBar 
@@ -54,6 +112,22 @@ export default function AppMenu({ isLoggedIn, setIsLoggedIn }) {
             }}
         >
             <Toolbar>
+                <IconButton
+                    edge="start"
+                    color="inherit"
+                    aria-label="menu"
+                    onClick={toggleDrawer(true)}
+                    sx={{ mr: 2, color: currentTheme.appMenu.textColor }}
+                >
+                    <MenuIcon />
+                </IconButton>
+                <Drawer
+                    anchor="left"
+                    open={drawerOpen}
+                    onClose={toggleDrawer(false)}
+                >
+                    {drawer}
+                </Drawer>
                 <img 
                     src={currentTheme.logo} 
                     height={50} 
@@ -70,12 +144,27 @@ export default function AppMenu({ isLoggedIn, setIsLoggedIn }) {
                         <AccountCircleIcon />
                     </IconButton>
                 ) : (
-                    <IconButton
-                        onClick={handleClick}
-                        sx={{ color: currentTheme.appMenu.textColor }}
-                    >
-                        <MenuIcon />
-                    </IconButton>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                        <Button
+                            variant="contained"
+                            onClick={handleLogin}
+                            sx={{
+                                backgroundColor: currentTheme.button.background.default,
+                                color: currentTheme.button.text,
+                                '&:hover': {
+                                    backgroundColor: currentTheme.button.background.hover
+                                }
+                            }}
+                        >
+                            Login
+                        </Button>
+                        <IconButton
+                            onClick={handleClick}
+                            sx={{ color: currentTheme.appMenu.textColor }}
+                        >
+                            <MoreVertIcon />
+                        </IconButton>
+                    </Box>
                 )}
                 <Menu
                     anchorEl={anchorEl}
@@ -112,9 +201,9 @@ export default function AppMenu({ isLoggedIn, setIsLoggedIn }) {
                             label="Fill Empty Spaces"
                         />
                     </MenuItem>
-                    <MenuItem>
-                        {isLoggedIn ? (
-                            <Button
+                    {isLoggedIn && (
+                        <MenuItem>
+                            <Button 
                                 variant="contained"
                                 fullWidth
                                 onClick={handleLogout}
@@ -128,23 +217,8 @@ export default function AppMenu({ isLoggedIn, setIsLoggedIn }) {
                             >
                                 Logout
                             </Button>
-                        ) : (
-                            <Button
-                                variant="contained"
-                                fullWidth
-                                onClick={handleLogin}
-                                sx={{
-                                    backgroundColor: currentTheme.button.background.default,
-                                    color: currentTheme.button.text,
-                                    '&:hover': {
-                                        backgroundColor: currentTheme.button.background.hover
-                                    }
-                                }}
-                            >
-                                Login
-                            </Button>
-                        )}
-                    </MenuItem>
+                        </MenuItem>
+                    )}
                 </Menu>
             </Toolbar>
         </AppBar>

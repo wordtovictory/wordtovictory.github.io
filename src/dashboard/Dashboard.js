@@ -3,17 +3,12 @@ import {BOOKS} from '../bible/constants.ts';
 import {useEffect, useState} from "react";
 import {Box, Container} from "@mui/material";
 import BookRecord from "./BookRecord";
-import StatisticsPanel from "./StatisticsPanel";
+import OverallProgress from "./OverallProgress";
 import ControlPanel from "./ControlPanel";
 import { useTheme } from '../theme/ThemeContext';
 
 const BOOKS1 = BOOKS.slice(0, 23);
 const BOOKS2 = BOOKS.slice(23, BOOKS.length);
-const statisticsPanelStyle = {
-    display: 'flex',
-    justifyContent: 'center',
-    width: '100%',
-};
 
 function Dashboard() {
     const [readStatus, setReadStatus] = useState({});
@@ -43,10 +38,10 @@ function Dashboard() {
                 display: 'flex', 
                 flexDirection: 'column', 
                 alignItems: 'center',
-                gap: 8
+                gap: 4
             }}>
-                <Box sx={statisticsPanelStyle}>
-                    <StatisticsPanel readStatus={readStatus}/>
+                <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+                    <OverallProgress readStatus={readStatus} />
                 </Box>
                 <Box sx={{
                     display: 'flex',
@@ -72,7 +67,7 @@ function Dashboard() {
                         )}
                     </Box>
                 </Box>
-                {/* <Box sx={{ height: 32 }} /> */}
+                <Box sx={{ height: 32 }} />
                 <ControlPanel readStatus={readStatus} setReadStatus={setReadStatus}/>
                 <Box sx={{ height: 32 }} />
             </Box>

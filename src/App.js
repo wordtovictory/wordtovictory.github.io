@@ -7,6 +7,7 @@ import AppMenu from "./header/AppMenu";
 import Footer from "./header/Footer";
 import { ThemeProvider, useTheme } from './theme/ThemeContext';
 import Login from './pages/Login';
+import Statistics from './pages/Statistics';
 
 function AppContent() {
     const { currentTheme } = useTheme();
@@ -46,6 +47,7 @@ function AppWrapper({ isLoggedIn, setIsLoggedIn }) {
                 <Routes>
                     <Route path="/login" element={!isLoggedIn ? <Login setIsLoggedIn={setIsLoggedIn} /> : <Navigate to="/dashboard" />} />
                     <Route path="/dashboard" element={<Dashboard />} />
+                    <Route path="/statistics" element={<Statistics />} />
                     <Route path="/" element={<Navigate to="/dashboard" />} />
                 </Routes>
             </Box>
@@ -55,7 +57,7 @@ function AppWrapper({ isLoggedIn, setIsLoggedIn }) {
 }
 
 function App() {
-    const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [isLoggedIn, setIsLoggedIn] = useState(localStorage.getItem('isLoggedIn') === 'true');
 
     useEffect(() => {
         // Check if user is logged in
