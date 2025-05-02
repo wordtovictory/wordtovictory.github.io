@@ -9,31 +9,31 @@ import { BOOKS } from '../bible/constants.ts';
 const categories = {
     oldTestament: {
         name: "Old Testament",
-        books: BOOKS.slice(0, 39)
+        books: BOOKS.slice(0, 39)  // Genesis to Malachi
     },
     newTestament: {
         name: "New Testament",
-        books: BOOKS.slice(39)
+        books: BOOKS.slice(39)  // Matthew to Revelation
     },
     law: {
         name: "The Law",
-        books: BOOKS.slice(0, 5)
+        books: BOOKS.slice(0, 5)  // Genesis to Deuteronomy
     },
     history: {
         name: "History",
-        books: BOOKS.slice(5, 17)
+        books: BOOKS.slice(5, 17)  // Joshua to Esther
     },
     wisdom: {
         name: "Wisdom",
-        books: BOOKS.slice(17, 22)
+        books: BOOKS.slice(17, 22)  // Job to Song of Songs
     },
     prophets: {
         name: "Prophets",
-        books: BOOKS.slice(22, 39)
+        books: BOOKS.slice(22, 39)  // Isaiah to Malachi
     },
     gospels: {
         name: "The Gospels",
-        books: BOOKS.slice(39, 43)
+        books: BOOKS.slice(39, 43)  // Matthew to John
     },
     churchHistory: {
         name: "Church History",
@@ -41,11 +41,11 @@ const categories = {
     },
     paulsLetters: {
         name: "Paul's Letters",
-        books: BOOKS.slice(44, 58)
+        books: BOOKS.slice(44, 57)  // Romans to Philemon
     },
     generalLetters: {
         name: "General Letters",
-        books: BOOKS.slice(58, 65)
+        books: BOOKS.slice(57, 65)  // Hebrews to Jude
     },
     prophecy: {
         name: "Prophecy",
