@@ -1,25 +1,29 @@
 import React, { useState } from 'react';
 import { useTheme } from '../theme/ThemeContext';
 import { appThemes } from '../theme/themeConfig';
-import { 
-    AppBar, 
-    Toolbar, 
+import {
+    AppBar,
+    Toolbar,
     Box,
     Switch,
     FormControlLabel,
     IconButton,
     Menu,
-    MenuItem
+    MenuItem,
+    Button
 } from '@mui/material';
 import Brightness4Icon from '@mui/icons-material/Brightness4';
 import Brightness7Icon from '@mui/icons-material/Brightness7';
 import MenuIcon from '@mui/icons-material/Menu';
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import { useNavigate } from 'react-router-dom';
 
-export default function AppMenu() {
+export default function AppMenu({ isLoggedIn, setIsLoggedIn }) {
     const { currentTheme, toggleTheme, fillBoxes, toggleFillBoxes } = useTheme();
     const isDarkMode = currentTheme === appThemes.darkOrange;
     const [anchorEl, setAnchorEl] = useState(null);
     const open = Boolean(anchorEl);
+    const navigate = useNavigate();
 
     const handleClick = (event) => {
         setAnchorEl(event.currentTarget);
@@ -29,22 +33,55 @@ export default function AppMenu() {
         setAnchorEl(null);
     };
 
+    const handleLogin = () => {
+        handleClose();
+        navigate('/login');
+    };
+
+    const handleLogout = () => {
+        localStorage.removeItem('isLoggedIn');
+        setIsLoggedIn(false);
+    };
+
     return (
-        <AppBar position="static" sx={{ backgroundColor: currentTheme.appMenu.backgroundColor }}>
+        <AppBar 
+            position="static" 
+            sx={{ 
+                backgroundColor: currentTheme.appMenu.backgroundColor,
+                '& .MuiAppBar-root': {
+                    backgroundColor: currentTheme.appMenu.backgroundColor
+                }
+            }}
+        >
             <Toolbar>
-                <img src={currentTheme.logo} height={50} alt="BibleTrack logo"/>
+                <img 
+                    src={currentTheme.logo} 
+                    height={50} 
+                    alt="BibleTrack logo"
+                    onClick={() => navigate('/dashboard')}
+                    style={{ cursor: 'pointer' }}
+                />
                 <Box sx={{ flexGrow: 1 }} />
-                <IconButton
-                    onClick={handleClick}
-                    sx={{ color: currentTheme.appMenu.textColor }}
-                >
-                    <MenuIcon />
-                </IconButton>
+                {isLoggedIn ? (
+                    <IconButton
+                        onClick={handleClick}
+                        sx={{ color: currentTheme.appMenu.textColor }}
+                    >
+                        <AccountCircleIcon />
+                    </IconButton>
+                ) : (
+                    <IconButton
+                        onClick={handleClick}
+                        sx={{ color: currentTheme.appMenu.textColor }}
+                    >
+                        <MenuIcon />
+                    </IconButton>
+                )}
                 <Menu
                     anchorEl={anchorEl}
                     open={open}
                     onClose={handleClose}
-                    sx={{ 
+                    sx={{
                         '& .MuiPaper-root': {
                             backgroundColor: currentTheme.appMenu.backgroundColor,
                             color: currentTheme.appMenu.textColor
@@ -74,7 +111,40 @@ export default function AppMenu() {
                             }
                             label="Fill Empty Spaces"
                         />
-                    </MenuItem>                    
+                    </MenuItem>
+                    <MenuItem>
+                        {isLoggedIn ? (
+                            <Button
+                                variant="contained"
+                                fullWidth
+                                onClick={handleLogout}
+                                sx={{
+                                    backgroundColor: currentTheme.button.background.default,
+                                    color: currentTheme.button.text,
+                                    '&:hover': {
+                                        backgroundColor: currentTheme.button.background.hover
+                                    }
+                                }}
+                            >
+                                Logout
+                            </Button>
+                        ) : (
+                            <Button
+                                variant="contained"
+                                fullWidth
+                                onClick={handleLogin}
+                                sx={{
+                                    backgroundColor: currentTheme.button.background.default,
+                                    color: currentTheme.button.text,
+                                    '&:hover': {
+                                        backgroundColor: currentTheme.button.background.hover
+                                    }
+                                }}
+                            >
+                                Login
+                            </Button>
+                        )}
+                    </MenuItem>
                 </Menu>
             </Toolbar>
         </AppBar>

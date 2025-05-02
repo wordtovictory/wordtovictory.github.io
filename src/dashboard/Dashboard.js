@@ -5,6 +5,7 @@ import {Box, Container} from "@mui/material";
 import BookRecord from "./BookRecord";
 import StatisticsPanel from "./StatisticsPanel";
 import ControlPanel from "./ControlPanel";
+import { useTheme } from '../theme/ThemeContext';
 
 const BOOKS1 = BOOKS.slice(0, 23);
 const BOOKS2 = BOOKS.slice(23, BOOKS.length);
@@ -16,6 +17,7 @@ const statisticsPanelStyle = {
 
 function Dashboard() {
     const [readStatus, setReadStatus] = useState({});
+    const { currentTheme } = useTheme();
 
     useEffect(() => {
         const readStatus = {}
@@ -29,20 +31,24 @@ function Dashboard() {
     }, [])
 
     return (
-        <Container maxWidth="xl" disableGutters sx={{ width: '100%', px: 0 }}>
+        <Container maxWidth="xl" disableGutters sx={{
+            width: '100%',
+            px: 0,
+            backgroundColor: currentTheme.background
+        }}>
             <Box sx={{ width: '100%', py: 2, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                 <Box sx={statisticsPanelStyle}>
                     <StatisticsPanel readStatus={readStatus}/>
                 </Box>
                 <Box sx={{ height: 32 }} />
-                <Box sx={{ 
+                <Box sx={{
                     display: 'flex',
                     flexDirection: { xs: 'column', md: 'row' },
                     gap: 2,
                     width: '100%',
                     justifyContent: 'center'
                 }}>
-                    <Box sx={{ 
+                    <Box sx={{
                         width: { xs: '100%', md: '896px' },
                         minWidth: { xs: '100%', md: '896px' }
                     }}>
@@ -50,7 +56,7 @@ function Dashboard() {
                             <BookRecord key={book.name} book={book} readStatus={readStatus} setReadStatus={setReadStatus}/>
                         )}
                     </Box>
-                    <Box sx={{ 
+                    <Box sx={{
                         width: { xs: '100%', md: '896px' },
                         minWidth: { xs: '100%', md: '896px' }
                     }}>
