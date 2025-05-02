@@ -88,39 +88,51 @@ export default function StatisticsPanel(props) {
         stats: calculateStats(category.books)
     }));
 
-    const StatItem = ({ title, stats }) => (
-        <Box sx={{ 
-            backgroundColor: currentTheme.background,
-            p: 2,
-            borderRadius: 1,
-            border: `1px solid ${currentTheme.button.border}`
-        }}>
-            <Typography variant="h6" sx={{ color: currentTheme.text, mb: 1 }}>
-                {title}
-            </Typography>
-            <Typography sx={{ color: currentTheme.text }}>
-                {stats.read} of {stats.total} chapters read
-            </Typography>
-            <div style={{width: 100, height: 100, margin: '10px auto'}}>
-                <CircularProgressbar 
-                    value={stats.percentage} 
-                    text={`${stats.percentage.toFixed(1)}%`}
-                    styles={{
-                        path: {
-                            stroke: currentTheme.primary,
-                        },
-                        text: {
-                            fill: currentTheme.text,
-                            fontSize: '12px'
-                        },
-                        trail: {
-                            stroke: currentTheme.progressTrail
-                        }
-                    }}
-                />
-            </div>
-        </Box>
-    );
+    const StatItem = ({ title, stats }) => {
+        // Determine width based on title
+        const isWideCategory = title === "All Books" || title === "Old Testament" || title === "New Testament";
+        const boxWidth = isWideCategory ? 200 : 180;
+        
+        return (
+            <Box sx={{ 
+                backgroundColor: currentTheme.background,
+                p: 1,
+                borderRadius: 1,
+                border: `1px solid ${currentTheme.button.border}`,
+                width: boxWidth,
+                minWidth: boxWidth,
+                height: 165,
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center'
+            }}>
+                <Typography variant="h6" sx={{ color: currentTheme.text, mb: 0.5, textAlign: 'center' }}>
+                    {title}
+                </Typography>
+                <Typography sx={{ color: currentTheme.text, textAlign: 'center' }}>
+                    {stats.read} of {stats.total} chapters read
+                </Typography>
+                <div style={{width: 90, height: 90, margin: '5px auto'}}>
+                    <CircularProgressbar 
+                        value={stats.percentage} 
+                        text={`${stats.percentage.toFixed(1)}%`}
+                        styles={{
+                            path: {
+                                stroke: currentTheme.primary,
+                            },
+                            text: {
+                                fill: currentTheme.text,
+                                fontSize: '12px'
+                            },
+                            trail: {
+                                stroke: currentTheme.progressTrail
+                            }
+                        }}
+                    />
+                </div>
+            </Box>
+        );
+    };
 
     return (
         <Box sx={{ 
