@@ -1,42 +1,50 @@
-import * as React from 'react';
-import AppBar from '@mui/material/AppBar';
-import Toolbar from '@mui/material/Toolbar';
-import Container from '@mui/material/Container';
-import Button from '@mui/material/Button';
+import React from 'react';
 import { useTheme } from '../theme/ThemeContext';
 import { appThemes } from '../theme/themeConfig';
+import { 
+    AppBar, 
+    Toolbar, 
+    Box,
+    Switch,
+    FormControlLabel
+} from '@mui/material';
+import Brightness4Icon from '@mui/icons-material/Brightness4';
+import Brightness7Icon from '@mui/icons-material/Brightness7';
 
-function AppMenu() {
-    const { currentTheme, toggleTheme } = useTheme();
+export default function AppMenu() {
+    const { currentTheme, toggleTheme, fillBoxes, toggleFillBoxes } = useTheme();
     const isDarkMode = currentTheme === appThemes.darkOrange;
-    
+
     return (
-        // <AppBar position="static" color="white">
-        <AppBar 
-            position="static" 
-            color="transparent"
-            sx={{ 
-                backgroundColor: currentTheme.background,
-                color: currentTheme.text
-            }}
-        >
-            <Container maxWidth="xl">
-                <Toolbar disableGutters sx={{ justifyContent: 'space-between' }}>
-                    <img src={currentTheme.logo} height={50} alt={"BibleTrack logo"}/>
-                    <Button 
-                        onClick={toggleTheme} 
-                        sx={{ 
-                            color: currentTheme.text,
-                            textTransform: 'none',
-                            fontSize: '1rem'
-                        }}
-                    >
-                        {isDarkMode ? 'Light Mode' : 'Dark Mode'}
-                    </Button>
-                </Toolbar>
-            </Container>
+        <AppBar position="static" sx={{ backgroundColor: currentTheme.appMenu.backgroundColor }}>
+            <Toolbar>
+                <img src={currentTheme.logo} height={50} alt="BibleTrack logo"/>
+                <Box sx={{ flexGrow: 1 }} />
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                    <FormControlLabel
+                        control={
+                            <Switch
+                                checked={fillBoxes}
+                                onChange={toggleFillBoxes}
+                            />
+                        }
+                        label="Fill Empty Spaces"
+                        sx={{ color: currentTheme.appMenu.textColor }}
+                    />
+                    <FormControlLabel
+                        control={
+                            <Switch
+                                checked={isDarkMode}
+                                onChange={toggleTheme}
+                                icon={<Brightness7Icon />}
+                                checkedIcon={<Brightness4Icon />}
+                            />
+                        }
+                        label="Dark Mode"
+                        sx={{ color: currentTheme.appMenu.textColor }}
+                    />
+                </Box>
+            </Toolbar>
         </AppBar>
     );
 }
-
-export default AppMenu;
