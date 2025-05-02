@@ -12,6 +12,7 @@ import Brightness4Icon from '@mui/icons-material/Brightness4';
 import Brightness7Icon from '@mui/icons-material/Brightness7';
 
 export default function AppMenu() {
+    
     const { currentTheme, toggleTheme, fillBoxes, toggleFillBoxes } = useTheme();
     const isDarkMode = currentTheme === appThemes.darkOrange;
 
