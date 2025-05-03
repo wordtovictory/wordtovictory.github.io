@@ -45,11 +45,25 @@ function Login({ setIsLoggedIn }) {
         }
 
         try {
-            await sendPasswordResetEmail(auth, formData.email);
+            console.log('Attempting to send password reset email to:', formData.email);
+            await sendPasswordResetEmail(auth, formData.email, {
+                url: window.location.origin + '/login', // URL to redirect after password reset
+                handleCodeInApp: true
+            });
             setSuccess('Password reset email sent. Please check your inbox.');
             setError('');
         } catch (error) {
-            setError(error.message);
+            console.error('Password reset error:', error);
+            // More user-friendly error messages
+            if (error.code === 'auth/invalid-email') {
+                setError('Please enter a valid email address');
+            } else if (error.code === 'auth/user-not-found') {
+                setError('No account found with this email address');
+            } else if (error.code === 'auth/too-many-requests') {
+                setError('Too many attempts. Please try again later');
+            } else {
+                setError('Failed to send reset email. Please try again later');
+            }
             setSuccess('');
         }
     };
