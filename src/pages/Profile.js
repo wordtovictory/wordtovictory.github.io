@@ -9,24 +9,22 @@ import {
     Alert
 } from '@mui/material';
 import { useTheme } from '../theme/ThemeContext';
-import { auth } from '../services/api';
+import { useUser } from 'reactfire';
+import { updateProfile } from 'firebase/auth';
 
 function Profile() {
-    const [user, setUser] = useState(null);
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
     const [isEditing, setIsEditing] = useState(false);
     const [editedName, setEditedName] = useState('');
     const { currentTheme } = useTheme();
+    const { data: user } = useUser();
 
     useEffect(() => {
-        const storedUser = localStorage.getItem('user');
-        if (storedUser) {
-            const userData = JSON.parse(storedUser);
-            setUser(userData);
-            setEditedName(userData.name);
+        if (user?.displayName) {
+            setEditedName(user.displayName);
         }
-    }, []);
+    }, [user]);
 
     const handleUpdateProfile = async (e) => {
         e.preventDefault();
@@ -34,13 +32,13 @@ function Profile() {
         setSuccess('');
 
         try {
-            const response = await auth.updateProfile({ name: editedName });
-            setUser(response.user);
-            localStorage.setItem('user', JSON.stringify(response.user));
+            await updateProfile(user, {
+                displayName: editedName
+            });
             setSuccess('Profile updated successfully');
             setIsEditing(false);
         } catch (error) {
-            setError(error.response?.data?.message || 'Failed to update profile');
+            setError(error.message || 'Failed to update profile');
         }
     };
 
@@ -128,7 +126,7 @@ function Profile() {
                                     variant="text"
                                     onClick={() => {
                                         setIsEditing(false);
-                                        setEditedName(user.name);
+                                        setEditedName(user.displayName || '');
                                     }}
                                     sx={{
                                         color: currentTheme.button.text,
@@ -148,7 +146,7 @@ function Profile() {
                                     Email: {user.email}
                                 </Typography>
                                 <Typography variant="subtitle1" sx={{ color: currentTheme.text }}>
-                                    Name: {user.name}
+                                    Name: {user.displayName || 'Not set'}
                                 </Typography>
                             </Box>
                             <Button

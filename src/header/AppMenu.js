@@ -27,6 +27,8 @@ import DashboardIcon from '@mui/icons-material/Dashboard';
 import BarChartIcon from '@mui/icons-material/BarChart';
 import LogoutIcon from '@mui/icons-material/Logout';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from 'reactfire';
+import { signOut } from 'firebase/auth';
 
 export default function AppMenu({ isLoggedIn, setIsLoggedIn }) {
     const { currentTheme, toggleTheme, fillBoxes, toggleFillBoxes } = useTheme();
@@ -35,6 +37,7 @@ export default function AppMenu({ isLoggedIn, setIsLoggedIn }) {
     const [drawerOpen, setDrawerOpen] = useState(false);
     const open = Boolean(anchorEl);
     const navigate = useNavigate();
+    const auth = useAuth();
 
     const handleClick = (event) => {
         setAnchorEl(event.currentTarget);
@@ -48,13 +51,15 @@ export default function AppMenu({ isLoggedIn, setIsLoggedIn }) {
         navigate('/login');
     };
 
-    const handleLogout = () => {
-        localStorage.removeItem('isLoggedIn');
-        localStorage.removeItem('token');
-        localStorage.removeItem('user');
-        setIsLoggedIn(false);
-        navigate('/login');
-        handleClose();
+    const handleLogout = async () => {
+        try {
+            await signOut(auth);
+            setIsLoggedIn(false);
+            navigate('/login');
+            handleClose();
+        } catch (error) {
+            console.error('Error signing out:', error);
+        }
     };
 
     const toggleDrawer = (open) => (event) => {
@@ -99,6 +104,34 @@ export default function AppMenu({ isLoggedIn, setIsLoggedIn }) {
                         <ListItemText primary={item.text} />
                     </ListItem>
                 ))}
+                <ListItem
+                    button
+                    onClick={toggleTheme}
+                    sx={{
+                        '&:hover': {
+                            backgroundColor: 'rgba(255, 255, 255, 0.08)',
+                        }
+                    }}
+                >
+                    <ListItemIcon sx={{ color: currentTheme.appMenu.textColor }}>
+                        {isDarkMode ? <Brightness7Icon /> : <Brightness4Icon />}
+                    </ListItemIcon>
+                    <ListItemText primary={isDarkMode ? 'Light Mode' : 'Dark Mode'} />
+                </ListItem>
+                <ListItem
+                    button
+                    onClick={toggleFillBoxes}
+                    sx={{
+                        '&:hover': {
+                            backgroundColor: 'rgba(255, 255, 255, 0.08)',
+                        }
+                    }}
+                >
+                    <ListItemIcon sx={{ color: currentTheme.appMenu.textColor }}>
+                        {fillBoxes ? <Brightness7Icon /> : <Brightness4Icon />}
+                    </ListItemIcon>
+                    <ListItemText primary={fillBoxes ? 'Filled Boxes' : 'Empty Boxes'} />
+                </ListItem>
             </List>
             <Divider sx={{ backgroundColor: currentTheme.button.border }} />
         </Box>

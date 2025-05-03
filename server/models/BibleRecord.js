@@ -2,9 +2,9 @@ const mongoose = require('mongoose');
 
 const bibleRecordSchema = new mongoose.Schema({
     userId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
-        required: true
+        type: String,  // Changed from ObjectId to String for Firebase UID
+        required: true,
+        unique: true
     },
     readStatus: {
         type: Map,

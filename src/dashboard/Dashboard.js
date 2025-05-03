@@ -7,21 +7,20 @@ import OverallProgress from "./OverallProgress";
 import ControlPanel from "./ControlPanel";
 import { useTheme } from '../theme/ThemeContext';
 import { bible } from '../services/api';
+import { useUser } from 'reactfire';
 
 const BOOKS1 = BOOKS.slice(0, 23);
 const BOOKS2 = BOOKS.slice(23, BOOKS.length);
 
 function Dashboard() {
     const [readStatus, setReadStatus] = useState({});
-    const [syncStatus, setSyncStatus] = useState({ message: '', severity: 'success', open: false });
-    const { currentTheme } = useTheme();
+    const [syncStatus, setSyncStatus] = useState({ message: '', severity: 'info', open: false });
+    const { currentTheme, fillBoxes } = useTheme();
+    const { data: user } = useUser();
 
-    // Load data from server and local storage
     useEffect(() => {
         const loadData = async () => {
-            const token = localStorage.getItem('token');
-            
-            if (token) {
+            if (user) {
                 // If logged in, load from server
                 try {
                     const serverData = await bible.getRecords();
@@ -50,35 +49,47 @@ function Dashboard() {
         };
 
         loadData();
-    }, []);
+    }, [user]);
 
-    // Sync with server when readStatus changes
-    useEffect(() => {
-        const syncWithServer = async () => {
+    const handleChapterClick = async (bookName, chapter) => {
+        const chapterKey = `${bookName}_${chapter}`;
+        const newStatus = !readStatus[chapterKey];
+        
+        // Update local state immediately
+        setReadStatus(prev => ({
+            ...prev,
+            [chapterKey]: newStatus
+        }));
+
+        if (user) {
+            // If logged in, sync with server
             try {
-                await bible.updateRecords(readStatus);
+                await bible.updateRecords({
+                    ...readStatus,
+                    [chapterKey]: newStatus
+                });
                 setSyncStatus({
-                    message: 'Progress synced with server',
+                    message: 'Changes saved to server',
                     severity: 'success',
                     open: true
                 });
             } catch (error) {
+                console.error('Failed to sync with server:', error);
                 setSyncStatus({
                     message: 'Failed to sync with server',
                     severity: 'error',
                     open: true
                 });
+                // Revert local state on error
+                setReadStatus(prev => ({
+                    ...prev,
+                    [chapterKey]: !newStatus
+                }));
             }
-        };
-
-        // Only sync if we have data and user is logged in
-        if (Object.keys(readStatus).length > 0 && localStorage.getItem('token')) {
-            syncWithServer();
+        } else {
+            // If not logged in, save to local storage
+            localStorage.setItem(chapterKey, newStatus.toString());
         }
-    }, [readStatus]);
-
-    const handleCloseSnackbar = () => {
-        setSyncStatus(prev => ({ ...prev, open: false }));
     };
 
     return (
@@ -130,11 +141,11 @@ function Dashboard() {
             <Snackbar
                 open={syncStatus.open}
                 autoHideDuration={3000}
-                onClose={handleCloseSnackbar}
+                onClose={() => setSyncStatus(prev => ({ ...prev, open: false }))}
                 anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
             >
                 <Alert 
-                    onClose={handleCloseSnackbar} 
+                    onClose={() => setSyncStatus(prev => ({ ...prev, open: false }))} 
                     severity={syncStatus.severity}
                     sx={{ width: '100%' }}
                 >

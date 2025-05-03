@@ -13,10 +13,11 @@ import {
     ListItemText
 } from '@mui/material';
 import { useTheme } from '../theme/ThemeContext';
-import { auth } from '../services/api';
 import { useNavigate, Link } from 'react-router-dom';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import ErrorIcon from '@mui/icons-material/Error';
+import { useAuth } from 'reactfire';
+import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
 
 function Registration({ setIsLoggedIn }) {
     const [formData, setFormData] = useState({
@@ -29,6 +30,7 @@ function Registration({ setIsLoggedIn }) {
     const [success, setSuccess] = useState('');
     const { currentTheme } = useTheme();
     const navigate = useNavigate();
+    const auth = useAuth();
 
     const passwordRequirements = [
         { text: 'At least 8 characters long', regex: /.{8,}/ },
@@ -69,18 +71,22 @@ function Registration({ setIsLoggedIn }) {
         }
 
         try {
-            const response = await auth.register({
-                name: formData.name,
-                email: formData.email,
-                password: formData.password
+            // Create user with email and password
+            const userCredential = await createUserWithEmailAndPassword(
+                auth,
+                formData.email,
+                formData.password
+            );
+
+            // Update profile with display name
+            await updateProfile(userCredential.user, {
+                displayName: formData.name
             });
-            
-            localStorage.setItem('token', response.token);
-            localStorage.setItem('user', JSON.stringify(response.user));
+
             setIsLoggedIn(true);
             navigate('/dashboard');
         } catch (error) {
-            setError(error.response?.data?.message || 'Registration failed');
+            setError(error.message);
         }
     };
 
@@ -112,7 +118,7 @@ function Registration({ setIsLoggedIn }) {
                         </Alert>
                     )}
 
-                    <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1 }}>
+                    <Box component="form" onSubmit={handleSubmit}>
                         <TextField
                             margin="normal"
                             required
@@ -130,10 +136,10 @@ function Registration({ setIsLoggedIn }) {
                                         borderColor: currentTheme.button.border,
                                     },
                                     '&:hover fieldset': {
-                                        borderColor: currentTheme.button.border,
+                                        borderColor: currentTheme.button.background.hover,
                                     },
                                     '&.Mui-focused fieldset': {
-                                        borderColor: currentTheme.primary,
+                                        borderColor: currentTheme.button.background.hover,
                                     },
                                 },
                                 '& .MuiInputLabel-root': {
@@ -141,7 +147,7 @@ function Registration({ setIsLoggedIn }) {
                                 },
                                 '& .MuiInputBase-input': {
                                     color: currentTheme.text,
-                                },
+                                }
                             }}
                         />
                         <TextField
@@ -160,10 +166,10 @@ function Registration({ setIsLoggedIn }) {
                                         borderColor: currentTheme.button.border,
                                     },
                                     '&:hover fieldset': {
-                                        borderColor: currentTheme.button.border,
+                                        borderColor: currentTheme.button.background.hover,
                                     },
                                     '&.Mui-focused fieldset': {
-                                        borderColor: currentTheme.primary,
+                                        borderColor: currentTheme.button.background.hover,
                                     },
                                 },
                                 '& .MuiInputLabel-root': {
@@ -171,7 +177,7 @@ function Registration({ setIsLoggedIn }) {
                                 },
                                 '& .MuiInputBase-input': {
                                     color: currentTheme.text,
-                                },
+                                }
                             }}
                         />
                         <TextField
@@ -191,10 +197,10 @@ function Registration({ setIsLoggedIn }) {
                                         borderColor: currentTheme.button.border,
                                     },
                                     '&:hover fieldset': {
-                                        borderColor: currentTheme.button.border,
+                                        borderColor: currentTheme.button.background.hover,
                                     },
                                     '&.Mui-focused fieldset': {
-                                        borderColor: currentTheme.primary,
+                                        borderColor: currentTheme.button.background.hover,
                                     },
                                 },
                                 '& .MuiInputLabel-root': {
@@ -202,7 +208,7 @@ function Registration({ setIsLoggedIn }) {
                                 },
                                 '& .MuiInputBase-input': {
                                     color: currentTheme.text,
-                                },
+                                }
                             }}
                         />
                         <TextField
@@ -222,10 +228,10 @@ function Registration({ setIsLoggedIn }) {
                                         borderColor: currentTheme.button.border,
                                     },
                                     '&:hover fieldset': {
-                                        borderColor: currentTheme.button.border,
+                                        borderColor: currentTheme.button.background.hover,
                                     },
                                     '&.Mui-focused fieldset': {
-                                        borderColor: currentTheme.primary,
+                                        borderColor: currentTheme.button.background.hover,
                                     },
                                 },
                                 '& .MuiInputLabel-root': {
@@ -233,7 +239,7 @@ function Registration({ setIsLoggedIn }) {
                                 },
                                 '& .MuiInputBase-input': {
                                     color: currentTheme.text,
-                                },
+                                }
                             }}
                         />
 
@@ -242,18 +248,14 @@ function Registration({ setIsLoggedIn }) {
                                 <ListItem key={index} sx={{ py: 0 }}>
                                     <ListItemIcon sx={{ minWidth: 36 }}>
                                         {checkPasswordRequirement(requirement) ? (
-                                            <CheckCircleIcon sx={{ color: 'success.main' }} />
+                                            <CheckCircleIcon color="success" />
                                         ) : (
-                                            <ErrorIcon sx={{ color: 'error.main' }} />
+                                            <ErrorIcon color="error" />
                                         )}
                                     </ListItemIcon>
                                     <ListItemText 
                                         primary={requirement.text}
-                                        sx={{ 
-                                            color: checkPasswordRequirement(requirement) 
-                                                ? 'success.main' 
-                                                : 'error.main'
-                                        }}
+                                        sx={{ color: currentTheme.text }}
                                     />
                                 </ListItem>
                             ))}
@@ -266,11 +268,10 @@ function Registration({ setIsLoggedIn }) {
                             sx={{
                                 mt: 3,
                                 mb: 2,
-                                backgroundColor: currentTheme.primary,
+                                backgroundColor: currentTheme.button.background.read,
                                 color: currentTheme.button.text,
                                 '&:hover': {
-                                    backgroundColor: currentTheme.primary,
-                                    opacity: 0.9
+                                    backgroundColor: currentTheme.button.background.hover,
                                 }
                             }}
                         >
@@ -283,7 +284,7 @@ function Registration({ setIsLoggedIn }) {
                                 <Link 
                                     to="/login" 
                                     style={{ 
-                                        color: currentTheme.primary,
+                                        color: currentTheme.button.background.read,
                                         textDecoration: 'none'
                                     }}
                                 >

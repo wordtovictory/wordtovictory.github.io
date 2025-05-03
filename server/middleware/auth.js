@@ -1,6 +1,14 @@
-const jwt = require('jsonwebtoken');
+const admin = require('firebase-admin');
 
-const authenticateToken = (req, res, next) => {
+// Initialize Firebase Admin if not already initialized
+if (!admin.apps.length) {
+    const serviceAccount = require('../word-to-victory-dev-firebase-adminsdk-fbsvc-d1e611e4e1.json');
+    admin.initializeApp({
+        credential: admin.credential.cert(serviceAccount)
+    });
+}
+
+const authenticateToken = async (req, res, next) => {
     const authHeader = req.headers['authorization'];
     const token = authHeader && authHeader.split(' ')[1]; // Bearer TOKEN
 
@@ -9,10 +17,15 @@ const authenticateToken = (req, res, next) => {
     }
 
     try {
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        req.user = decoded;
-        next();
+        const decodedToken = await admin.auth().verifyIdToken(token);
+        req.user = {
+            userId: decodedToken.uid,
+            email: decodedToken.email,
+            name: decodedToken.name
+        };
+        return next();
     } catch (error) {
+        console.error('Firebase token verification failed:', error);
         res.status(403).json({ message: 'Invalid token' });
     }
 };

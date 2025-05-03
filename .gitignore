@@ -33,3 +33,5 @@ yarn-error.log*
 *.swo
 
 playground-1.mongodb.js
+
+word-to-victory-dev-firebase-adminsdk-fbsvc-d1e611e4e1.json
