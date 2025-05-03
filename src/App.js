@@ -9,7 +9,6 @@ import { ThemeProvider, useTheme } from './theme/ThemeContext';
 import Login from './pages/Login';
 import Registration from './pages/Registration';
 import Statistics from './pages/Statistics';
-import ResetPassword from './pages/ResetPassword';
 import Profile from './pages/Profile';
 import { FirebaseAppProvider, AuthProvider, useAuth, useSigninCheck } from 'reactfire';
 import { initializeApp } from 'firebase/app';
@@ -76,7 +75,6 @@ function AppWrapper({ isLoggedIn, setIsLoggedIn }) {
                     <Route path="/register" element={!isLoggedIn ? <Registration setIsLoggedIn={setIsLoggedIn} /> : <Navigate to="/dashboard" />} />
                     <Route path="/dashboard" element={isLoggedIn ? <Dashboard /> : <Navigate to="/login" />} />
                     <Route path="/statistics" element={isLoggedIn ? <Statistics /> : <Navigate to="/login" />} />
-                    <Route path="/reset-password/:token" element={<ResetPassword />} />
                     <Route path="/profile" element={isLoggedIn ? <Profile /> : <Navigate to="/login" />} />
                     <Route path="/" element={<Navigate to={isLoggedIn ? "/dashboard" : "/login"} />} />
                 </Routes>

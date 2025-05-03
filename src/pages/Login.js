@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Container, Box, Paper, Typography, Button, TextField, Alert } from '@mui/material';
+import { Container, Box, Paper, Typography, Button, TextField, Alert, Link } from '@mui/material';
 import { useTheme } from '../theme/ThemeContext';
 import { useNavigate } from 'react-router-dom';
 import { useSigninCheck, useAuth } from 'reactfire';
@@ -8,7 +8,8 @@ import {
     createUserWithEmailAndPassword,
     GoogleAuthProvider,
     signInWithPopup,
-    updateProfile
+    updateProfile,
+    sendPasswordResetEmail
 } from 'firebase/auth';
 import { bible } from '../services/api';
 import { BOOKS } from '../bible/constants.ts';
@@ -20,6 +21,7 @@ function Login({ setIsLoggedIn }) {
         name: ''
     });
     const [error, setError] = useState('');
+    const [success, setSuccess] = useState('');
     const [isRegistering, setIsRegistering] = useState(false);
     const { currentTheme } = useTheme();
     const navigate = useNavigate();
@@ -33,11 +35,29 @@ function Login({ setIsLoggedIn }) {
             [e.target.name]: e.target.value
         });
         setError('');
+        setSuccess('');
+    };
+
+    const handleForgotPassword = async () => {
+        if (!formData.email) {
+            setError('Please enter your email address');
+            return;
+        }
+
+        try {
+            await sendPasswordResetEmail(auth, formData.email);
+            setSuccess('Password reset email sent. Please check your inbox.');
+            setError('');
+        } catch (error) {
+            setError(error.message);
+            setSuccess('');
+        }
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError('');
+        setSuccess('');
 
         try {
             let result;
@@ -85,6 +105,7 @@ function Login({ setIsLoggedIn }) {
             navigate('/dashboard');
         } catch (error) {
             setError(error.message);
+            setSuccess('');
         }
     };
 
@@ -123,6 +144,7 @@ function Login({ setIsLoggedIn }) {
             navigate('/dashboard');
         } catch (error) {
             setError(error.message);
+            setSuccess('');
         }
     };
 
@@ -151,6 +173,12 @@ function Login({ setIsLoggedIn }) {
                     {error && (
                         <Alert severity="error" sx={{ mb: 2 }}>
                             {error}
+                        </Alert>
+                    )}
+
+                    {success && (
+                        <Alert severity="success" sx={{ mb: 2 }}>
+                            {success}
                         </Alert>
                     )}
 
@@ -250,6 +278,24 @@ function Login({ setIsLoggedIn }) {
                                 }
                             }}
                         />
+
+                        {!isRegistering && (
+                            <Box sx={{ textAlign: 'right', mb: 2 }}>
+                                <Link
+                                    component="button"
+                                    variant="body2"
+                                    onClick={handleForgotPassword}
+                                    sx={{
+                                        color: currentTheme.button.background.read,
+                                        '&:hover': {
+                                            textDecoration: 'underline'
+                                        }
+                                    }}
+                                >
+                                    Forgot Password?
+                                </Link>
+                            </Box>
+                        )}
 
                         <Button
                             type="submit"

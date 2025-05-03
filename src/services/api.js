@@ -32,29 +32,6 @@ api.interceptors.request.use(
     }
 );
 
-export const auth = {
-    register: async (userData) => {
-        const response = await api.post('/auth/register', userData);
-        return response.data;
-    },
-    login: async (userData) => {
-        const response = await api.post('/auth/login', userData);
-        return response.data;
-    },
-    forgotPassword: async (email) => {
-        const response = await api.post('/auth/forgot-password', { email });
-        return response.data;
-    },
-    resetPassword: async (token, password) => {
-        const response = await api.post(`/auth/reset-password/${token}`, { password });
-        return response.data;
-    },
-    updateProfile: async (userData) => {
-        const response = await api.put('/auth/profile', userData);
-        return response.data;
-    }
-};
-
 export const bible = {
     getRecords: async () => {
         const response = await api.get('/bible/records');

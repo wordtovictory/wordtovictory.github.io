@@ -7,7 +7,6 @@ require('dotenv').config({
         ? '.env.production' 
         : '.env.development'
 });
-const authRoutes = require('./routes/auth');
 const bibleRoutes = require('./routes/bible');
 
 const app = express();
@@ -26,7 +25,6 @@ app.use(cors(corsOptions));
 app.use(express.json());
 
 // Routes
-app.use('/api/auth', authRoutes);
 app.use('/api/bible', bibleRoutes);
 
 // Connect to MongoDB
