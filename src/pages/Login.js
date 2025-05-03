@@ -171,13 +171,15 @@ function Login({ setIsLoggedIn }) {
     return (
         <Container maxWidth="sm">
             <Box sx={{ mt: 4 }}>
-                <Paper
+                <Paper 
                     elevation={3}
-                    sx={{
+                    sx={{ 
                         p: 4,
                         backgroundColor: currentTheme.background,
                         color: currentTheme.text,
-                        border: `1px solid ${currentTheme.button.border}`
+                        border: currentTheme.paper.border,
+                        backdropFilter: currentTheme.paper.backdropFilter,                        
+                        borderRadius: '12px'
                     }}
                 >
                     <Typography component="h1" variant="h5" sx={{ mb: 3, color: currentTheme.text }}>
@@ -211,18 +213,20 @@ function Login({ setIsLoggedIn }) {
                                 onChange={handleChange}
                                 sx={{
                                     '& .MuiOutlinedInput-root': {
+                                        backgroundColor: currentTheme.input.background,
                                         '& fieldset': {
-                                            borderColor: currentTheme.button.border,
+                                            borderColor: currentTheme.input.border,
                                         },
                                         '&:hover fieldset': {
-                                            borderColor: currentTheme.button.background.hover,
+                                            borderColor: currentTheme.input.borderHover,
                                         },
                                         '&.Mui-focused fieldset': {
-                                            borderColor: currentTheme.button.background.hover,
+                                            borderColor: currentTheme.input.borderFocus,
                                         },
+                                        borderRadius: '8px',
                                     },
                                     '& .MuiInputLabel-root': {
-                                        color: currentTheme.text,
+                                        color: currentTheme.input.label,
                                     },
                                     '& .MuiInputBase-input': {
                                         color: currentTheme.text,
@@ -241,20 +245,22 @@ function Login({ setIsLoggedIn }) {
                             autoFocus={!isRegistering}
                             value={formData.email}
                             onChange={handleChange}
-                            sx={{
+                            sx={{ 
                                 '& .MuiOutlinedInput-root': {
+                                    backgroundColor: currentTheme.input.background,
                                     '& fieldset': {
-                                        borderColor: currentTheme.button.border,
+                                        borderColor: currentTheme.input.border,
                                     },
                                     '&:hover fieldset': {
-                                        borderColor: currentTheme.button.background.hover,
+                                        borderColor: currentTheme.input.borderHover,
                                     },
                                     '&.Mui-focused fieldset': {
-                                        borderColor: currentTheme.button.background.hover,
+                                        borderColor: currentTheme.input.borderFocus,
                                     },
+                                    borderRadius: '8px',
                                 },
                                 '& .MuiInputLabel-root': {
-                                    color: currentTheme.text,
+                                    color: currentTheme.input.label,
                                 },
                                 '& .MuiInputBase-input': {
                                     color: currentTheme.text,
@@ -272,20 +278,22 @@ function Login({ setIsLoggedIn }) {
                             autoComplete={isRegistering ? "new-password" : "current-password"}
                             value={formData.password}
                             onChange={handleChange}
-                            sx={{
+                            sx={{ 
                                 '& .MuiOutlinedInput-root': {
+                                    backgroundColor: currentTheme.input.background,
                                     '& fieldset': {
-                                        borderColor: currentTheme.button.border,
+                                        borderColor: currentTheme.input.border,
                                     },
                                     '&:hover fieldset': {
-                                        borderColor: currentTheme.button.background.hover,
+                                        borderColor: currentTheme.input.borderHover,
                                     },
                                     '&.Mui-focused fieldset': {
-                                        borderColor: currentTheme.button.background.hover,
+                                        borderColor: currentTheme.input.borderFocus,
                                     },
+                                    borderRadius: '8px',
                                 },
                                 '& .MuiInputLabel-root': {
-                                    color: currentTheme.text,
+                                    color: currentTheme.input.label,
                                 },
                                 '& .MuiInputBase-input': {
                                     color: currentTheme.text,
@@ -300,7 +308,7 @@ function Login({ setIsLoggedIn }) {
                                     variant="body2"
                                     onClick={handleForgotPassword}
                                     sx={{
-                                        color: currentTheme.button.background.read,
+                                        color: currentTheme.text,
                                         '&:hover': {
                                             textDecoration: 'underline'
                                         }
@@ -315,14 +323,15 @@ function Login({ setIsLoggedIn }) {
                             type="submit"
                             fullWidth
                             variant="contained"
-                            sx={{
+                            sx={{ 
                                 mt: 3,
                                 mb: 2,
                                 backgroundColor: currentTheme.button.background.read,
                                 color: currentTheme.button.text,
                                 '&:hover': {
                                     backgroundColor: currentTheme.button.background.hover,
-                                }
+                                },
+                                borderRadius: '8px'
                             }}
                         >
                             {isRegistering ? 'Register' : 'Sign In'}
@@ -334,15 +343,16 @@ function Login({ setIsLoggedIn }) {
                             onClick={handleGoogleSignIn}
                             sx={{
                                 mb: 2,
-                                backgroundColor: currentTheme.button.background.default,
+                                backgroundColor: currentTheme.googleButton.background,
                                 color: currentTheme.button.text,
                                 '&:hover': {
-                                    backgroundColor: currentTheme.button.background.hover,
+                                    backgroundColor: currentTheme.googleButton.backgroundHover,
                                 },
                                 display: 'flex',
                                 alignItems: 'center',
                                 justifyContent: 'center',
-                                gap: '8px'
+                                gap: '8px',
+                                borderRadius: '8px'
                             }}
                         >
                             <img 
@@ -357,7 +367,7 @@ function Login({ setIsLoggedIn }) {
                             <Button
                                 onClick={() => setIsRegistering(!isRegistering)}
                                 sx={{
-                                    color: currentTheme.button.background.read,
+                                    color: currentTheme.text,
                                     '&:hover': {
                                         backgroundColor: 'transparent',
                                         textDecoration: 'underline'

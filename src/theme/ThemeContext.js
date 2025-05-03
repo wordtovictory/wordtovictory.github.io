@@ -12,7 +12,7 @@ export function ThemeProvider({ children }) {
     const [fillBoxes, setFillBoxes] = useState(true);
 
     const toggleTheme = () => {
-        setCurrentTheme(currentTheme === appThemes.orange ? appThemes.darkOrange : appThemes.orange);
+        setCurrentTheme(currentTheme.mode === 'light' ? appThemes.darkOrange : appThemes.orange);
     };
 
     const toggleFillBoxes = () => {

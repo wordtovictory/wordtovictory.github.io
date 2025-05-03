@@ -26,7 +26,23 @@ export const appThemes = {
                 read: '#ed6c02',
                 hover: 'rgba(0, 0, 0, 0.04)'
             }
-        }
+        },
+        input: {
+            background: 'transparent',
+            border: 'rgba(0, 0, 0, 0.23)',
+            borderHover: 'rgba(0, 0, 0, 0.87)',
+            borderFocus: 'rgba(0, 0, 0, 0.87)',
+            label: '#8B4000'
+        },
+        googleButton: {
+            background: '#f5f5f5',
+            backgroundHover: '#e0e0e0'
+        },
+        paper: {
+            border: 'none',
+            backdropFilter: 'none'
+        },
+        mode: 'light'
     },
     blue: {
         primary: '#1976d2', // Material-UI primary color
@@ -52,7 +68,23 @@ export const appThemes = {
                 read: '#1976d2',
                 hover: 'rgba(0, 0, 0, 0.04)'
             }
-        }
+        },
+        input: {
+            background: 'transparent',
+            border: 'rgba(0, 0, 0, 0.23)',
+            borderHover: 'rgba(0, 0, 0, 0.87)',
+            borderFocus: 'rgba(0, 0, 0, 0.87)',
+            label: '#0d47a1'
+        },
+        googleButton: {
+            background: '#f5f5f5',
+            backgroundHover: '#e0e0e0'
+        },
+        paper: {
+            border: 'none',
+            backdropFilter: 'none'
+        },
+        mode: 'light'
     },
     darkOrange: {
         primary: '#ed6c02', // Material-UI warning color
@@ -78,7 +110,23 @@ export const appThemes = {
                 read: '#ed6c02',
                 hover: 'rgba(255, 255, 255, 0.08)'
             }
-        }
+        },
+        input: {
+            background: 'rgba(255, 255, 255, 0.05)',
+            border: 'rgba(255, 255, 255, 0.1)',
+            borderHover: 'rgba(255, 255, 255, 0.2)',
+            borderFocus: 'rgba(255, 255, 255, 0.3)',
+            label: 'rgba(255, 255, 255, 0.7)'
+        },
+        googleButton: {
+            background: 'rgba(255, 255, 255, 0.08)',
+            backgroundHover: 'rgba(255, 255, 255, 0.12)'
+        },
+        paper: {
+            border: '1px solid rgba(255, 255, 255, 0.1)',
+            backdropFilter: 'blur(10px)'
+        },
+        mode: 'dark',
     },
     darkBlue: {
         primary: '#64b5f6', // Light blue - good for both buttons and progress
@@ -104,7 +152,23 @@ export const appThemes = {
                 read: '#64b5f6',
                 hover: 'rgba(255, 255, 255, 0.08)'
             }
-        }
+        },
+        input: {
+            background: 'rgba(255, 255, 255, 0.05)',
+            border: 'rgba(255, 255, 255, 0.1)',
+            borderHover: 'rgba(255, 255, 255, 0.2)',
+            borderFocus: 'rgba(255, 255, 255, 0.3)',
+            label: 'rgba(255, 255, 255, 0.7)'
+        },
+        googleButton: {
+            background: 'rgba(255, 255, 255, 0.08)',
+            backgroundHover: 'rgba(255, 255, 255, 0.12)'
+        },
+        paper: {
+            border: '1px solid rgba(255, 255, 255, 0.1)',
+            backdropFilter: 'blur(10px)'
+        },
+        mode: 'dark',
     }
 };
 
