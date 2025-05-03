@@ -33,7 +33,11 @@ export default function BookRecord(props) {
         const newReadStatus = {...readStatus};
         newReadStatus[chapterKey] = newRead;
         setReadStatus(newReadStatus);
-        localStorage.setItem(chapterKey, JSON.stringify(newRead));
+        
+        // Only update localStorage if not logged in
+        if (!localStorage.getItem('token')) {
+            localStorage.setItem(chapterKey, JSON.stringify(newRead));
+        }
     };
 
     const getReadStatus = (chapterKey) => {

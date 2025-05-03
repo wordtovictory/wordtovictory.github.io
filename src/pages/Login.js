@@ -1,121 +1,104 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import {
     Container,
     Box,
-    TextField,
-    Button,
+    Paper,
     Typography,
+    Button,
+    TextField,
     Alert,
-    Paper
+    Link
 } from '@mui/material';
 import { useTheme } from '../theme/ThemeContext';
 import { auth } from '../services/api';
+import { useNavigate } from 'react-router-dom';
 
 function Login({ setIsLoggedIn }) {
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
+    const [formData, setFormData] = useState({
+        email: '',
+        password: ''
+    });
     const [error, setError] = useState('');
-    const [isRegistering, setIsRegistering] = useState(false);
-    const [name, setName] = useState('');
-    const navigate = useNavigate();
     const { currentTheme } = useTheme();
+    const navigate = useNavigate();
+
+    const handleChange = (e) => {
+        setFormData({
+            ...formData,
+            [e.target.name]: e.target.value
+        });
+        setError('');
+    };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError('');
 
         try {
-            const userData = isRegistering ? { email, password, name } : { email, password };
-            const response = isRegistering 
-                ? await auth.register(userData)
-                : await auth.login(userData);
-
-            // Store token and user data
+            const response = await auth.login({
+                email: formData.email,
+                password: formData.password
+            });
+            
             localStorage.setItem('token', response.token);
             localStorage.setItem('user', JSON.stringify(response.user));
-            localStorage.setItem('isLoggedIn', 'true');
-            
             setIsLoggedIn(true);
             navigate('/dashboard');
         } catch (error) {
-            setError(error.response?.data?.message || 'An error occurred');
+            setError(error.response?.data?.message || 'Login failed');
         }
     };
 
     return (
         <Container maxWidth="sm">
-            <Box
-                sx={{
-                    marginTop: 8,
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                }}
-            >
+            <Box sx={{ mt: 4 }}>
                 <Paper
                     elevation={3}
                     sx={{
-                        padding: 4,
-                        display: 'flex',
-                        flexDirection: 'column',
-                        alignItems: 'center',
+                        p: 4,
                         backgroundColor: currentTheme.background,
                         color: currentTheme.text,
-                        width: '100%'
+                        border: `1px solid ${currentTheme.button.border}`
                     }}
                 >
-                    <Typography component="h1" variant="h5">
-                        {isRegistering ? 'Register' : 'Login'}
+                    <Typography component="h1" variant="h5" sx={{ mb: 3, color: currentTheme.text }}>
+                        Sign In
                     </Typography>
+
                     {error && (
-                        <Alert severity="error" sx={{ mt: 2, width: '100%' }}>
+                        <Alert severity="error" sx={{ mb: 2 }}>
                             {error}
                         </Alert>
                     )}
-                    <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1, width: '100%' }}>
-                        {isRegistering && (
-                            <TextField
-                                margin="normal"
-                                required
-                                fullWidth
-                                label="Name"
-                                value={name}
-                                onChange={(e) => setName(e.target.value)}
-                                sx={{
-                                    '& .MuiOutlinedInput-root': {
-                                        color: currentTheme.text,
-                                        '& fieldset': {
-                                            borderColor: currentTheme.button.border,
-                                        },
-                                        '&:hover fieldset': {
-                                            borderColor: currentTheme.primary,
-                                        },
-                                    },
-                                    '& .MuiInputLabel-root': {
-                                        color: currentTheme.text,
-                                    },
-                                }}
-                            />
-                        )}
+
+                    <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1 }}>
                         <TextField
                             margin="normal"
                             required
                             fullWidth
+                            id="email"
                             label="Email Address"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
+                            name="email"
+                            autoComplete="email"
+                            autoFocus
+                            value={formData.email}
+                            onChange={handleChange}
                             sx={{
                                 '& .MuiOutlinedInput-root': {
-                                    color: currentTheme.text,
                                     '& fieldset': {
                                         borderColor: currentTheme.button.border,
                                     },
                                     '&:hover fieldset': {
+                                        borderColor: currentTheme.button.border,
+                                    },
+                                    '&.Mui-focused fieldset': {
                                         borderColor: currentTheme.primary,
                                     },
                                 },
                                 '& .MuiInputLabel-root': {
+                                    color: currentTheme.text,
+                                },
+                                '& .MuiInputBase-input': {
                                     color: currentTheme.text,
                                 },
                             }}
@@ -124,25 +107,34 @@ function Login({ setIsLoggedIn }) {
                             margin="normal"
                             required
                             fullWidth
+                            name="password"
                             label="Password"
                             type="password"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
+                            id="password"
+                            autoComplete="current-password"
+                            value={formData.password}
+                            onChange={handleChange}
                             sx={{
                                 '& .MuiOutlinedInput-root': {
-                                    color: currentTheme.text,
                                     '& fieldset': {
                                         borderColor: currentTheme.button.border,
                                     },
                                     '&:hover fieldset': {
+                                        borderColor: currentTheme.button.border,
+                                    },
+                                    '&.Mui-focused fieldset': {
                                         borderColor: currentTheme.primary,
                                     },
                                 },
                                 '& .MuiInputLabel-root': {
                                     color: currentTheme.text,
                                 },
+                                '& .MuiInputBase-input': {
+                                    color: currentTheme.text,
+                                },
                             }}
                         />
+
                         <Button
                             type="submit"
                             fullWidth
@@ -150,25 +142,35 @@ function Login({ setIsLoggedIn }) {
                             sx={{
                                 mt: 3,
                                 mb: 2,
-                                backgroundColor: currentTheme.button.background.default,
+                                backgroundColor: currentTheme.primary,
                                 color: currentTheme.button.text,
                                 '&:hover': {
-                                    backgroundColor: currentTheme.button.background.hover
+                                    backgroundColor: currentTheme.primary,
+                                    opacity: 0.9
                                 }
                             }}
                         >
-                            {isRegistering ? 'Register' : 'Login'}
+                            Sign In
                         </Button>
-                        <Button
-                            fullWidth
-                            variant="text"
-                            onClick={() => setIsRegistering(!isRegistering)}
-                            sx={{
-                                color: currentTheme.text
-                            }}
-                        >
-                            {isRegistering ? 'Already have an account? Login' : 'Need an account? Register'}
-                        </Button>
+
+                        <Box sx={{ textAlign: 'center' }}>
+                            <Typography variant="body2" sx={{ color: currentTheme.text }}>
+                                Don't have an account?{' '}
+                                <Link 
+                                    component={Link}
+                                    to="/register" 
+                                    sx={{ 
+                                        color: currentTheme.primary,
+                                        textDecoration: 'none',
+                                        '&:hover': {
+                                            textDecoration: 'underline'
+                                        }
+                                    }}
+                                >
+                                    Register
+                                </Link>
+                            </Typography>
+                        </Box>
                     </Box>
                 </Paper>
             </Box>

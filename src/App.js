@@ -7,7 +7,10 @@ import AppMenu from "./header/AppMenu";
 import Footer from "./header/Footer";
 import { ThemeProvider, useTheme } from './theme/ThemeContext';
 import Login from './pages/Login';
+import Registration from './pages/Registration';
 import Statistics from './pages/Statistics';
+import ResetPassword from './pages/ResetPassword';
+import Profile from './pages/Profile';
 
 function AppContent() {
     const { currentTheme } = useTheme();
@@ -46,8 +49,11 @@ function AppWrapper({ isLoggedIn, setIsLoggedIn }) {
             <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
                 <Routes>
                     <Route path="/login" element={!isLoggedIn ? <Login setIsLoggedIn={setIsLoggedIn} /> : <Navigate to="/dashboard" />} />
+                    <Route path="/register" element={!isLoggedIn ? <Registration setIsLoggedIn={setIsLoggedIn} /> : <Navigate to="/dashboard" />} />
                     <Route path="/dashboard" element={<Dashboard />} />
                     <Route path="/statistics" element={<Statistics />} />
+                    <Route path="/reset-password/:token" element={<ResetPassword />} />
+                    <Route path="/profile" element={isLoggedIn ? <Profile /> : <Navigate to="/login" />} />
                     <Route path="/" element={<Navigate to="/dashboard" />} />
                 </Routes>
             </Box>
@@ -57,12 +63,13 @@ function AppWrapper({ isLoggedIn, setIsLoggedIn }) {
 }
 
 function App() {
-    const [isLoggedIn, setIsLoggedIn] = useState(localStorage.getItem('isLoggedIn') === 'true');
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
 
     useEffect(() => {
-        // Check if user is logged in
-        const loggedIn = localStorage.getItem('isLoggedIn') === 'true';
-        setIsLoggedIn(loggedIn);
+        const token = localStorage.getItem('token');
+        if (token) {
+            setIsLoggedIn(true);
+        }
     }, []);
 
     return (

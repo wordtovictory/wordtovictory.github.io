@@ -1,6 +1,15 @@
 import axios from 'axios';
 
-const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
+// Get the current host and port
+const getBaseUrl = () => {
+    const host = window.location.hostname;
+    const port = '5000'; // Your backend port
+    return host === 'localhost' || host === '127.0.0.1' 
+        ? `http://localhost:${port}/api`
+        : `http://${host}:${port}/api`;
+};
+
+const API_URL = process.env.REACT_APP_API_URL || getBaseUrl();
 
 const api = axios.create({
     baseURL: API_URL,
@@ -28,8 +37,20 @@ export const auth = {
         const response = await api.post('/auth/register', userData);
         return response.data;
     },
-    login: async (credentials) => {
-        const response = await api.post('/auth/login', credentials);
+    login: async (userData) => {
+        const response = await api.post('/auth/login', userData);
+        return response.data;
+    },
+    forgotPassword: async (email) => {
+        const response = await api.post('/auth/forgot-password', { email });
+        return response.data;
+    },
+    resetPassword: async (token, password) => {
+        const response = await api.post(`/auth/reset-password/${token}`, { password });
+        return response.data;
+    },
+    updateProfile: async (userData) => {
+        const response = await api.put('/auth/profile', userData);
         return response.data;
     }
 };

@@ -37,9 +37,11 @@ export default function ControlPanel(props) {
                 .then((data) => JSON.parse(data))
                 .then((data) => {
                     setReadStatus(data[0].readStatus);
-                    Object.entries(data[0].readStatus).forEach(
-                        ([key, value]) => localStorage.setItem(key, value)
-                    );
+                    if (!localStorage.getItem('token')) {
+                        Object.entries(data[0].readStatus).forEach(
+                            ([key, value]) => localStorage.setItem(key, value)
+                        );
+                    }
                 });
         }
     };
@@ -52,12 +54,14 @@ export default function ControlPanel(props) {
     const handleClearAll = () => {
         console.log("Clearing all");
         const readStatus = {}
-        BOOKS.map(book => {
-            for (let i = 1; i < book.numChapters + 1; i++) {
-                const chapterKey = book.name + "_" + i;
-                localStorage.setItem(chapterKey, "false");
-            }
-        })
+        if (!localStorage.getItem('token')) {
+            BOOKS.map(book => {
+                for (let i = 1; i < book.numChapters + 1; i++) {
+                    const chapterKey = book.name + "_" + i;
+                    localStorage.setItem(chapterKey, "false");
+                }
+            });
+        }
         console.log(readStatus);
         setReadStatus(readStatus);
     };

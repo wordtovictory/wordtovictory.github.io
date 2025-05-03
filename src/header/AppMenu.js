@@ -25,6 +25,7 @@ import MoreVertIcon from '@mui/icons-material/MoreVert';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import BarChartIcon from '@mui/icons-material/BarChart';
+import LogoutIcon from '@mui/icons-material/Logout';
 import { useNavigate } from 'react-router-dom';
 
 export default function AppMenu({ isLoggedIn, setIsLoggedIn }) {
@@ -49,6 +50,8 @@ export default function AppMenu({ isLoggedIn, setIsLoggedIn }) {
 
     const handleLogout = () => {
         localStorage.removeItem('isLoggedIn');
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
         setIsLoggedIn(false);
         navigate('/login');
         handleClose();
@@ -177,6 +180,11 @@ export default function AppMenu({ isLoggedIn, setIsLoggedIn }) {
                         }
                     }}
                 >
+                    {isLoggedIn && (
+                        <MenuItem onClick={() => navigate('/profile')}>
+                            Profile
+                        </MenuItem>
+                    )}
                     <MenuItem>
                         <FormControlLabel
                             control={
@@ -207,6 +215,7 @@ export default function AppMenu({ isLoggedIn, setIsLoggedIn }) {
                                 variant="contained"
                                 fullWidth
                                 onClick={handleLogout}
+                                startIcon={<LogoutIcon />}
                                 sx={{
                                     backgroundColor: currentTheme.button.background.default,
                                     color: currentTheme.button.text,

@@ -19,18 +19,25 @@ function Dashboard() {
     // Load data from server and local storage
     useEffect(() => {
         const loadData = async () => {
-            try {
-                // Try to load from server first
-                const serverData = await bible.getRecords();
-                if (serverData && serverData.readStatus) {
-                    setReadStatus(serverData.readStatus);
-                    // Update local storage with server data
-                    Object.entries(serverData.readStatus).forEach(([key, value]) => {
-                        localStorage.setItem(key, value.toString());
+            const token = localStorage.getItem('token');
+            
+            if (token) {
+                // If logged in, load from server
+                try {
+                    const serverData = await bible.getRecords();
+                    if (serverData && serverData.readStatus) {
+                        setReadStatus(serverData.readStatus);
+                    }
+                } catch (error) {
+                    console.error('Failed to load data from server:', error);
+                    setSyncStatus({
+                        message: 'Failed to load data from server',
+                        severity: 'error',
+                        open: true
                     });
                 }
-            } catch (error) {
-                // If server load fails, load from local storage
+            } else {
+                // If not logged in, load from local storage
                 const localData = {};
                 BOOKS.forEach(book => {
                     for (let i = 1; i < book.numChapters + 1; i++) {
