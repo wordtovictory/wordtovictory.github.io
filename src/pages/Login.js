@@ -338,9 +338,18 @@ function Login({ setIsLoggedIn }) {
                                 color: currentTheme.button.text,
                                 '&:hover': {
                                     backgroundColor: currentTheme.button.background.hover,
-                                }
+                                },
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                gap: '8px'
                             }}
                         >
+                            <img 
+                                src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" 
+                                alt="Google logo"
+                                style={{ width: '18px', height: '18px' }}
+                            />
                             Sign in with Google
                         </Button>
 
