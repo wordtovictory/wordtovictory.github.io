@@ -2,14 +2,15 @@
 
 # dependencies
 /node_modules
-/.pnp
-.pnp.js
+/server/node_modules
 
-# testing
-/coverage
+# environment variables
+.env
+/server/.env
 
-# production
+# production build
 /build
+/dist
 
 # misc
 .DS_Store
@@ -22,4 +23,8 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-/.idea
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo

@@ -1,125 +1,155 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { 
-    Box, 
-    TextField, 
-    Button, 
-    Typography, 
-    Paper,
-    Container
+import {
+    Container,
+    Box,
+    TextField,
+    Button,
+    Typography,
+    Alert,
+    Paper
 } from '@mui/material';
 import { useTheme } from '../theme/ThemeContext';
-import { appThemes } from '../theme/themeConfig';
+import { auth } from '../services/api';
 
-export default function Login({ setIsLoggedIn }) {
-    const { currentTheme } = useTheme();
-    const isDarkMode = currentTheme === appThemes.darkOrange;
+function Login({ setIsLoggedIn }) {
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [error, setError] = useState('');
+    const [isRegistering, setIsRegistering] = useState(false);
+    const [name, setName] = useState('');
     const navigate = useNavigate();
-    const [credentials, setCredentials] = useState({
-        username: '',
-        password: ''
-    });
+    const { currentTheme } = useTheme();
 
-    const handleChange = (e) => {
-        const { name, value } = e.target;
-        setCredentials(prev => ({
-            ...prev,
-            [name]: value
-        }));
-    };
-
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        // Dummy login - in a real app, this would call an API
-        if (credentials.username && credentials.password) {
+        setError('');
+
+        try {
+            const userData = isRegistering ? { email, password, name } : { email, password };
+            const response = isRegistering 
+                ? await auth.register(userData)
+                : await auth.login(userData);
+
+            // Store token and user data
+            localStorage.setItem('token', response.token);
+            localStorage.setItem('user', JSON.stringify(response.user));
             localStorage.setItem('isLoggedIn', 'true');
+            
             setIsLoggedIn(true);
             navigate('/dashboard');
+        } catch (error) {
+            setError(error.response?.data?.message || 'An error occurred');
         }
     };
 
     return (
-        <Container 
-            maxWidth="sm" 
-            sx={{ 
-                backgroundColor: currentTheme.background,
-                padding: 0,
-                marginTop: '64px', // Add margin to account for AppBar height
-                display: 'flex',
-                flexDirection: 'column',
-                flex: 1
-            }}
-        >
-            <Box 
-                sx={{ 
+        <Container maxWidth="sm">
+            <Box
+                sx={{
+                    marginTop: 8,
                     display: 'flex',
+                    flexDirection: 'column',
                     alignItems: 'center',
-                    justifyContent: 'center',
-                    backgroundColor: currentTheme.background,
-                    padding: '20px',
-                    flex: 1
                 }}
             >
-                <Paper 
+                <Paper
                     elevation={3}
-                    sx={{ 
-                        p: 4,
-                        width: '100%',
+                    sx={{
+                        padding: 4,
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
                         backgroundColor: currentTheme.background,
                         color: currentTheme.text,
-                        border: isDarkMode ? `1px solid ${currentTheme.button.border}` : '1px solid rgba(0, 0, 0, 0.12)',
-                        boxShadow: isDarkMode ? '0 4px 20px rgba(0, 0, 0, 0.5)' : undefined
+                        width: '100%'
                     }}
                 >
-                    <Typography variant="h4" component="h1" gutterBottom align="center">
-                        Login
+                    <Typography component="h1" variant="h5">
+                        {isRegistering ? 'Register' : 'Login'}
                     </Typography>
-                    <form onSubmit={handleSubmit}>
+                    {error && (
+                        <Alert severity="error" sx={{ mt: 2, width: '100%' }}>
+                            {error}
+                        </Alert>
+                    )}
+                    <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1, width: '100%' }}>
+                        {isRegistering && (
+                            <TextField
+                                margin="normal"
+                                required
+                                fullWidth
+                                label="Name"
+                                value={name}
+                                onChange={(e) => setName(e.target.value)}
+                                sx={{
+                                    '& .MuiOutlinedInput-root': {
+                                        color: currentTheme.text,
+                                        '& fieldset': {
+                                            borderColor: currentTheme.button.border,
+                                        },
+                                        '&:hover fieldset': {
+                                            borderColor: currentTheme.primary,
+                                        },
+                                    },
+                                    '& .MuiInputLabel-root': {
+                                        color: currentTheme.text,
+                                    },
+                                }}
+                            />
+                        )}
                         <TextField
-                            fullWidth
-                            label="Username"
-                            name="username"
-                            value={credentials.username}
-                            onChange={handleChange}
                             margin="normal"
-                            sx={{ 
+                            required
+                            fullWidth
+                            label="Email Address"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            sx={{
                                 '& .MuiOutlinedInput-root': {
                                     color: currentTheme.text,
                                     '& fieldset': {
-                                        borderColor: currentTheme.button.border
-                                    }
+                                        borderColor: currentTheme.button.border,
+                                    },
+                                    '&:hover fieldset': {
+                                        borderColor: currentTheme.primary,
+                                    },
                                 },
                                 '& .MuiInputLabel-root': {
-                                    color: currentTheme.text
-                                }
+                                    color: currentTheme.text,
+                                },
                             }}
                         />
                         <TextField
+                            margin="normal"
+                            required
                             fullWidth
                             label="Password"
-                            name="password"
                             type="password"
-                            value={credentials.password}
-                            onChange={handleChange}
-                            margin="normal"
-                            sx={{ 
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            sx={{
                                 '& .MuiOutlinedInput-root': {
                                     color: currentTheme.text,
                                     '& fieldset': {
-                                        borderColor: currentTheme.button.border
-                                    }
+                                        borderColor: currentTheme.button.border,
+                                    },
+                                    '&:hover fieldset': {
+                                        borderColor: currentTheme.primary,
+                                    },
                                 },
                                 '& .MuiInputLabel-root': {
-                                    color: currentTheme.text
-                                }
+                                    color: currentTheme.text,
+                                },
                             }}
                         />
                         <Button
                             type="submit"
                             fullWidth
                             variant="contained"
-                            sx={{ 
+                            sx={{
                                 mt: 3,
+                                mb: 2,
                                 backgroundColor: currentTheme.button.background.default,
                                 color: currentTheme.button.text,
                                 '&:hover': {
@@ -127,11 +157,23 @@ export default function Login({ setIsLoggedIn }) {
                                 }
                             }}
                         >
-                            Login
+                            {isRegistering ? 'Register' : 'Login'}
                         </Button>
-                    </form>
+                        <Button
+                            fullWidth
+                            variant="text"
+                            onClick={() => setIsRegistering(!isRegistering)}
+                            sx={{
+                                color: currentTheme.text
+                            }}
+                        >
+                            {isRegistering ? 'Already have an account? Login' : 'Need an account? Register'}
+                        </Button>
+                    </Box>
                 </Paper>
             </Box>
         </Container>
     );
-} 
+}
+
+export default Login; 

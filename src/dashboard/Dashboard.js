@@ -1,29 +1,78 @@
 import '../App.css';
 import {BOOKS} from '../bible/constants.ts';
 import {useEffect, useState} from "react";
-import {Box, Container} from "@mui/material";
+import {Box, Container, Snackbar, Alert} from "@mui/material";
 import BookRecord from "./BookRecord";
 import OverallProgress from "./OverallProgress";
 import ControlPanel from "./ControlPanel";
 import { useTheme } from '../theme/ThemeContext';
+import { bible } from '../services/api';
 
 const BOOKS1 = BOOKS.slice(0, 23);
 const BOOKS2 = BOOKS.slice(23, BOOKS.length);
 
 function Dashboard() {
     const [readStatus, setReadStatus] = useState({});
+    const [syncStatus, setSyncStatus] = useState({ message: '', severity: 'success', open: false });
     const { currentTheme } = useTheme();
 
+    // Load data from server and local storage
     useEffect(() => {
-        const readStatus = {}
-        BOOKS.map(book => {
-            for (let i = 1; i < book.numChapters + 1; i++) {
-                const chapterKey = book.name + "_" + i;
-                readStatus[chapterKey] = localStorage.getItem(chapterKey) === "true";
+        const loadData = async () => {
+            try {
+                // Try to load from server first
+                const serverData = await bible.getRecords();
+                if (serverData && serverData.readStatus) {
+                    setReadStatus(serverData.readStatus);
+                    // Update local storage with server data
+                    Object.entries(serverData.readStatus).forEach(([key, value]) => {
+                        localStorage.setItem(key, value.toString());
+                    });
+                }
+            } catch (error) {
+                // If server load fails, load from local storage
+                const localData = {};
+                BOOKS.forEach(book => {
+                    for (let i = 1; i < book.numChapters + 1; i++) {
+                        const chapterKey = book.name + "_" + i;
+                        localData[chapterKey] = localStorage.getItem(chapterKey) === "true";
+                    }
+                });
+                setReadStatus(localData);
             }
-        })
-        setReadStatus(readStatus);
-    }, [])
+        };
+
+        loadData();
+    }, []);
+
+    // Sync with server when readStatus changes
+    useEffect(() => {
+        const syncWithServer = async () => {
+            try {
+                await bible.updateRecords(readStatus);
+                setSyncStatus({
+                    message: 'Progress synced with server',
+                    severity: 'success',
+                    open: true
+                });
+            } catch (error) {
+                setSyncStatus({
+                    message: 'Failed to sync with server',
+                    severity: 'error',
+                    open: true
+                });
+            }
+        };
+
+        // Only sync if we have data and user is logged in
+        if (Object.keys(readStatus).length > 0 && localStorage.getItem('token')) {
+            syncWithServer();
+        }
+    }, [readStatus]);
+
+    const handleCloseSnackbar = () => {
+        setSyncStatus(prev => ({ ...prev, open: false }));
+    };
 
     return (
         <Container maxWidth="xl" sx={{
@@ -71,6 +120,20 @@ function Dashboard() {
                 <ControlPanel readStatus={readStatus} setReadStatus={setReadStatus}/>
                 <Box sx={{ height: 32 }} />
             </Box>
+            <Snackbar
+                open={syncStatus.open}
+                autoHideDuration={3000}
+                onClose={handleCloseSnackbar}
+                anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+            >
+                <Alert 
+                    onClose={handleCloseSnackbar} 
+                    severity={syncStatus.severity}
+                    sx={{ width: '100%' }}
+                >
+                    {syncStatus.message}
+                </Alert>
+            </Snackbar>
         </Container>
     );
 }

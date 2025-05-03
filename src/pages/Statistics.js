@@ -3,20 +3,38 @@ import { Box, Container } from "@mui/material";
 import StatisticsPanel from "../dashboard/StatisticsPanel";
 import { useTheme } from '../theme/ThemeContext';
 import { BOOKS } from '../bible/constants.ts';
+import { bible } from '../services/api';
 
 function Statistics() {
     const [readStatus, setReadStatus] = useState({});
     const { currentTheme } = useTheme();
 
     useEffect(() => {
-        const readStatus = {}
-        BOOKS.map(book => {
-            for (let i = 1; i < book.numChapters + 1; i++) {
-                const chapterKey = book.name + "_" + i;
-                readStatus[chapterKey] = localStorage.getItem(chapterKey) === "true";
+        const loadData = async () => {
+            try {
+                // Try to load from server first
+                const serverData = await bible.getRecords();
+                if (serverData && serverData.readStatus) {
+                    setReadStatus(serverData.readStatus);
+                    // Update local storage with server data
+                    Object.entries(serverData.readStatus).forEach(([key, value]) => {
+                        localStorage.setItem(key, value.toString());
+                    });
+                }
+            } catch (error) {
+                // If server load fails, load from local storage
+                const localData = {};
+                BOOKS.forEach(book => {
+                    for (let i = 1; i < book.numChapters + 1; i++) {
+                        const chapterKey = book.name + "_" + i;
+                        localData[chapterKey] = localStorage.getItem(chapterKey) === "true";
+                    }
+                });
+                setReadStatus(localData);
             }
-        })
-        setReadStatus(readStatus);
+        };
+
+        loadData();
     }, []);
 
     return (
