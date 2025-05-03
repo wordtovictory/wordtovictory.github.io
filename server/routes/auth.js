@@ -7,6 +7,7 @@ const User = require('../models/User');
 const BibleRecord = require('../models/BibleRecord');
 const crypto = require('crypto');
 const emailService = require('../services/emailService');
+const { authenticateToken } = require('../middleware/auth');
 
 // Middleware to validate request
 const validateRequest = (req, res, next) => {
@@ -225,6 +226,34 @@ router.post('/reset-password/:token', async (req, res) => {
         await user.save();
 
         res.json({ message: 'Password has been reset' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server error' });
+    }
+});
+
+// Update user profile
+router.put('/profile', authenticateToken, [
+    body('name').trim().notEmpty().withMessage('Name is required')
+], validateRequest, async (req, res) => {
+    try {
+        const { name } = req.body;
+        const user = await User.findById(req.user.userId);
+        
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        user.name = name;
+        await user.save();
+
+        res.json({
+            user: {
+                id: user._id,
+                email: user.email,
+                name: user.name
+            }
+        });
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Server error' });
