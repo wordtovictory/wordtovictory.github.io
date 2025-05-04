@@ -1,43 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Box, Container } from "@mui/material";
 import StatisticsPanel from "../dashboard/StatisticsPanel";
 import { useTheme } from '../theme/ThemeContext';
-import { BOOKS } from '../bible/constants.ts';
-import { bible } from '../services/api';
 
-function Statistics() {
-    const [readStatus, setReadStatus] = useState({});
+function Statistics({ readStatus }) {
     const { currentTheme } = useTheme();
-
-    useEffect(() => {
-        const loadData = async () => {
-            const token = localStorage.getItem('token');
-            
-            if (token) {
-                // If logged in, load from server
-                try {
-                    const serverData = await bible.getRecords();
-                    if (serverData && serverData.readStatus) {
-                        setReadStatus(serverData.readStatus);
-                    }
-                } catch (error) {
-                    console.error('Failed to load data from server:', error);
-                }
-            } else {
-                // If not logged in, load from local storage
-                const localData = {};
-                BOOKS.forEach(book => {
-                    for (let i = 1; i < book.numChapters + 1; i++) {
-                        const chapterKey = book.name + "_" + i;
-                        localData[chapterKey] = localStorage.getItem(chapterKey) === "true";
-                    }
-                });
-                setReadStatus(localData);
-            }
-        };
-
-        loadData();
-    }, []);
 
     return (
         <Container maxWidth="xl" sx={{

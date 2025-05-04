@@ -13,6 +13,8 @@ import Profile from './pages/Profile';
 import { FirebaseAppProvider, AuthProvider, useAuth, useSigninCheck } from 'reactfire';
 import { initializeApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
+import { bible } from './services/api';
+import { BOOKS } from './bible/constants.ts';
 
 const firebaseConfig = {
     apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
@@ -27,7 +29,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 
-function AppContent() {
+function AppContent({ readStatus, setReadStatus }) {
     const { currentTheme } = useTheme();
     
     return (
@@ -42,7 +44,7 @@ function AppContent() {
                 margin: 'auto',
                 maxWidth: '2200px'
             }}>
-                <Dashboard/>
+                <Dashboard readStatus={readStatus} setReadStatus={setReadStatus} />
             </Box>
             <Footer/>
         </div>
@@ -52,6 +54,54 @@ function AppContent() {
 function AppWrapper({ isLoggedIn, setIsLoggedIn }) {
     const { currentTheme } = useTheme();
     const { status, data: signInCheckResult } = useSigninCheck();
+    const [readStatus, setReadStatus] = useState(null);
+    const [isLoading, setIsLoading] = useState(true);
+
+    useEffect(() => {
+        const loadData = async () => {
+            setIsLoading(true);
+            try {
+                if (signInCheckResult?.signedIn) {
+                    // If logged in, load from server
+                    const response = await bible.getRecords();
+                    if (response.data && response.data.readStatus) {
+                        setReadStatus(response.data.readStatus);
+                    } else {
+                        // Initialize empty records if none exist
+                        const emptyRecords = {};
+                        BOOKS.forEach(book => {
+                            for (let i = 1; i < book.numChapters + 1; i++) {
+                                const chapterKey = book.name + "_" + i;
+                                emptyRecords[chapterKey] = false;
+                            }
+                        });
+                        setReadStatus(emptyRecords);
+                    }
+                } else {
+                    // If not logged in, load from local storage
+                    const localData = {};
+                    BOOKS.forEach(book => {
+                        for (let i = 1; i < book.numChapters + 1; i++) {
+                            const chapterKey = book.name + "_" + i;
+                            localData[chapterKey] = localStorage.getItem(chapterKey) === "true";
+                        }
+                    });
+                    setReadStatus(localData);
+                }
+            } catch (error) {
+                console.error('Failed to load data:', error);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        // Reset readStatus when auth state changes
+        setReadStatus(null);
+        
+        if (status === 'success') {
+            loadData();
+        }
+    }, [status, signInCheckResult?.signedIn]);
     
     // Update isLoggedIn state when Firebase auth state changes
     useEffect(() => {
@@ -60,8 +110,8 @@ function AppWrapper({ isLoggedIn, setIsLoggedIn }) {
         }
     }, [status, signInCheckResult, setIsLoggedIn]);
     
-    // Show loading state while checking auth
-    if (status === 'loading') {
+    // Show loading state while checking auth or loading data
+    if (status === 'loading' || isLoading || readStatus === null) {
         return (
             <Box sx={{ 
                 display: 'flex', 
@@ -81,7 +131,7 @@ function AppWrapper({ isLoggedIn, setIsLoggedIn }) {
             </Box>
         );
     }
-    
+
     return (
         <div className="App" style={{ 
             minHeight: '100vh',
@@ -95,8 +145,8 @@ function AppWrapper({ isLoggedIn, setIsLoggedIn }) {
                 <Routes>
                     <Route path="/login" element={!isLoggedIn ? <Login setIsLoggedIn={setIsLoggedIn} /> : <Navigate to="/dashboard" />} />
                     <Route path="/register" element={!isLoggedIn ? <Registration setIsLoggedIn={setIsLoggedIn} /> : <Navigate to="/dashboard" />} />
-                    <Route path="/dashboard" element={isLoggedIn ? <Dashboard /> : <Navigate to="/login" />} />
-                    <Route path="/statistics" element={isLoggedIn ? <Statistics /> : <Navigate to="/login" />} />
+                    <Route path="/dashboard" element={isLoggedIn ? <Dashboard readStatus={readStatus} setReadStatus={setReadStatus} /> : <Navigate to="/login" />} />
+                    <Route path="/statistics" element={isLoggedIn ? <Statistics readStatus={readStatus} /> : <Navigate to="/login" />} />
                     <Route path="/profile" element={isLoggedIn ? <Profile /> : <Navigate to="/login" />} />
                     <Route path="/" element={<Navigate to={isLoggedIn ? "/dashboard" : "/login"} />} />
                 </Routes>

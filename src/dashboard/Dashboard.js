@@ -12,65 +12,12 @@ import { useSigninCheck } from 'reactfire';
 const BOOKS1 = BOOKS.slice(0, 23);
 const BOOKS2 = BOOKS.slice(23, BOOKS.length);
 
-function Dashboard() {
-    const [readStatus, setReadStatus] = useState(null);
+function Dashboard({ readStatus, setReadStatus }) {
     const [syncStatus, setSyncStatus] = useState({ message: '', severity: 'info', open: false });
-    const [isLoading, setIsLoading] = useState(true);
     const { currentTheme, fillBoxes } = useTheme();
     const { status, data: signInCheckResult } = useSigninCheck();
 
-    useEffect(() => {
-        const loadData = async () => {
-            setIsLoading(true);
-            try {
-                if (signInCheckResult?.signedIn) {
-                    // If logged in, load from server
-                    const response = await bible.getRecords();
-                    if (response.data && response.data.readStatus) {
-                        setReadStatus(response.data.readStatus);
-                    } else {
-                        // Initialize empty records if none exist
-                        const emptyRecords = {};
-                        BOOKS.forEach(book => {
-                            for (let i = 1; i < book.numChapters + 1; i++) {
-                                const chapterKey = book.name + "_" + i;
-                                emptyRecords[chapterKey] = false;
-                            }
-                        });
-                        setReadStatus(emptyRecords);
-                    }
-                } else {
-                    // If not logged in, load from local storage
-                    const localData = {};
-                    BOOKS.forEach(book => {
-                        for (let i = 1; i < book.numChapters + 1; i++) {
-                            const chapterKey = book.name + "_" + i;
-                            localData[chapterKey] = localStorage.getItem(chapterKey) === "true";
-                        }
-                    });
-                    setReadStatus(localData);
-                }
-            } catch (error) {
-                console.error('Failed to load data:', error);
-                setSyncStatus({
-                    message: 'Failed to load data',
-                    severity: 'error',
-                    open: true
-                });
-            } finally {
-                setIsLoading(false);
-            }
-        };
-
-        // Reset readStatus when auth state changes
-        setReadStatus(null);
-        
-        if (status === 'success') {
-            loadData();
-        }
-    }, [status, signInCheckResult?.signedIn]);
-
-    if (status === 'loading' || isLoading || readStatus === null) {
+    if (status === 'loading' || readStatus === null) {
         return (
             <Box sx={{ 
                 display: 'flex', 
