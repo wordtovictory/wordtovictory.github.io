@@ -4,11 +4,14 @@ import {Box} from "@mui/material";
 import exportFromJSON from "export-from-json";
 import {BOOKS} from '../bible/constants.ts';
 import { useTheme } from '../theme/ThemeContext';
+import { useSigninCheck } from 'reactfire';
+import { bible } from '../services/api';
 
 export default function ControlPanel(props) {
     const { currentTheme } = useTheme();
     const {readStatus, setReadStatus} = props;
     const inputRef = useRef(null);
+    const { status, data: signInCheckResult } = useSigninCheck();
 
     const getButtonColor = () => {
         return currentTheme.buttonColor;
@@ -30,19 +33,28 @@ export default function ControlPanel(props) {
         exportFromJSON({data, fileName, exportType});
     };
 
-    const handleInputLoad = (event) => {
+    const handleInputLoad = async (event) => {
         if (event.target.files.length) {
-            event.target.files[0]
-                .text()
-                .then((data) => JSON.parse(data))
-                .then((data) => {
-                    setReadStatus(data[0].readStatus);
-                    if (!localStorage.getItem('token')) {
-                        Object.entries(data[0].readStatus).forEach(
-                            ([key, value]) => localStorage.setItem(key, value)
-                        );
-                    }
-                });
+            try {
+                const data = await event.target.files[0].text();
+                const parsedData = JSON.parse(data);
+                const newReadStatus = parsedData[0].readStatus;
+                
+                // Update local state
+                setReadStatus(newReadStatus);
+                
+                if (signInCheckResult?.signedIn) {
+                    // If logged in, sync with server
+                    await bible.updateRecords(newReadStatus);
+                } else {
+                    // If not logged in, save to local storage
+                    Object.entries(newReadStatus).forEach(
+                        ([key, value]) => localStorage.setItem(key, value)
+                    );
+                }
+            } catch (error) {
+                console.error('Failed to load or sync data:', error);
+            }
         }
     };
 
