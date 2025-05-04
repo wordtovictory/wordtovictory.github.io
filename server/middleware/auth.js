@@ -39,6 +39,12 @@ const authenticateToken = async (req, res, next) => {
         return next();
     } catch (error) {
         console.error('Firebase token verification failed:', error);
+        if (error.code === 'auth/id-token-expired') {
+            return res.status(401).json({ 
+                message: 'Token expired',
+                code: 'TOKEN_EXPIRED'
+            });
+        }
         res.status(403).json({ message: 'Invalid token' });
     }
 };

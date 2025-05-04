@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import './App.css';
 import Dashboard from "./dashboard/Dashboard";
-import { Box } from "@mui/material";
+import { Box, CircularProgress } from "@mui/material";
 import AppMenu from "./header/AppMenu";
 import Footer from "./header/Footer";
 import { ThemeProvider, useTheme } from './theme/ThemeContext';
@@ -60,6 +60,28 @@ function AppWrapper({ isLoggedIn, setIsLoggedIn }) {
         }
     }, [status, signInCheckResult, setIsLoggedIn]);
     
+    // Show loading state while checking auth
+    if (status === 'loading') {
+        return (
+            <Box sx={{ 
+                display: 'flex', 
+                justifyContent: 'center', 
+                alignItems: 'center', 
+                height: 'calc(100vh - 64px - 48px)',
+                marginTop: '64px'
+            }}>
+                <CircularProgress 
+                    color="inherit"
+                    sx={{ 
+                        '& .MuiCircularProgress-circle': {
+                            stroke: currentTheme.primary
+                        }
+                    }} 
+                />
+            </Box>
+        );
+    }
+    
     return (
         <div className="App" style={{ 
             minHeight: '100vh',
@@ -90,11 +112,11 @@ function App() {
     return (
         <FirebaseAppProvider firebaseConfig={firebaseConfig}>
             <AuthProvider sdk={auth}>
-                <ThemeProvider>
-                    <Router>
+                <Router>
+                    <ThemeProvider>
                         <AppWrapper isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />
-                    </Router>
-                </ThemeProvider>
+                    </ThemeProvider>
+                </Router>
             </AuthProvider>
         </FirebaseAppProvider>
     );

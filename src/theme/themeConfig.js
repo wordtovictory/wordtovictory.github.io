@@ -1,5 +1,5 @@
-import logo from '../BibleTrack_cropped.png';
-import logoDark from '../BibleTrack_cropped_dark.png';
+import logo from '../WordToVictory_light.png';
+import logoDark from '../WordToVictory_dark.png';
 
 export const appThemes = {
     orange: {

@@ -4,11 +4,14 @@ import Box from "@mui/material/Box";
 import { useTheme } from '../theme/ThemeContext';
 import { useTheme as useMuiTheme } from '@mui/material/styles';
 import { useRef, useEffect, useState } from 'react';
+import { useUser } from 'reactfire';
+import { bible } from '../services/api';
 
 export default function BookRecord(props) {
     const { currentTheme, fillBoxes } = useTheme();
     const muiTheme = useMuiTheme();
     const {book, readStatus, setReadStatus} = props;
+    const { data: user } = useUser();
     const containerRef = useRef(null);
     const [buttonsPerRow, setButtonsPerRow] = useState(20);
 
@@ -26,17 +29,34 @@ export default function BookRecord(props) {
         pr: 2
     }
 
-    const toggleRead = (event) => {
+    const handleChapterClick = async (event) => {
         const chapterKey = event.currentTarget.value;
-        const currentRead = readStatus[chapterKey];
-        const newRead = !currentRead;
-        const newReadStatus = {...readStatus};
-        newReadStatus[chapterKey] = newRead;
-        setReadStatus(newReadStatus);
+        const newStatus = !readStatus[chapterKey];
         
-        // Only update localStorage if not logged in
-        if (!localStorage.getItem('token')) {
-            localStorage.setItem(chapterKey, JSON.stringify(newRead));
+        // Update local state immediately
+        setReadStatus(prev => ({
+            ...prev,
+            [chapterKey]: newStatus
+        }));
+
+        if (user) {
+            // If logged in, sync with server
+            try {
+                await bible.updateRecords({
+                    ...readStatus,
+                    [chapterKey]: newStatus
+                });
+            } catch (error) {
+                console.error('Failed to sync with server:', error);
+                // Revert local state on error
+                setReadStatus(prev => ({
+                    ...prev,
+                    [chapterKey]: !newStatus
+                }));
+            }
+        } else {
+            // If not logged in, save to local storage
+            localStorage.setItem(chapterKey, newStatus.toString());
         }
     };
 
@@ -104,7 +124,7 @@ export default function BookRecord(props) {
                         <Button
                             key={chapterKey}
                             value={chapterKey}
-                            onClick={toggleRead}
+                            onClick={handleChapterClick}
                             variant={isRead ? "contained" : "outlined"}
                             sx={{
                                 ...buttonStyle,

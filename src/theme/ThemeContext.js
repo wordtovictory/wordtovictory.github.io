@@ -1,6 +1,4 @@
 import React, { createContext, useState, useContext } from 'react';
-import logo from '../BibleTrack_cropped.png';
-import logoDark from '../BibleTrack_cropped_dark.png';
 import { appThemes } from './themeConfig';
 
 

@@ -1,96 +1,82 @@
 import '../App.css';
 import {BOOKS} from '../bible/constants.ts';
 import {useEffect, useState} from "react";
-import {Box, Container, Snackbar, Alert} from "@mui/material";
+import {Box, Container, Snackbar, Alert, CircularProgress} from "@mui/material";
 import BookRecord from "./BookRecord";
 import OverallProgress from "./OverallProgress";
 import ControlPanel from "./ControlPanel";
 import { useTheme } from '../theme/ThemeContext';
 import { bible } from '../services/api';
-import { useUser } from 'reactfire';
+import { useSigninCheck } from 'reactfire';
 
 const BOOKS1 = BOOKS.slice(0, 23);
 const BOOKS2 = BOOKS.slice(23, BOOKS.length);
 
 function Dashboard() {
-    const [readStatus, setReadStatus] = useState({});
+    const [readStatus, setReadStatus] = useState(null);
     const [syncStatus, setSyncStatus] = useState({ message: '', severity: 'info', open: false });
+    const [isLoading, setIsLoading] = useState(true);
     const { currentTheme, fillBoxes } = useTheme();
-    const { data: user } = useUser();
+    const { status, data: signInCheckResult } = useSigninCheck();
 
     useEffect(() => {
         const loadData = async () => {
-            if (user) {
-                // If logged in, load from server
-                try {
-                    const serverData = await bible.getRecords();
-                    if (serverData && serverData.readStatus) {
-                        setReadStatus(serverData.readStatus);
-                    }
-                } catch (error) {
-                    console.error('Failed to load data from server:', error);
-                    setSyncStatus({
-                        message: 'Failed to load data from server',
-                        severity: 'error',
-                        open: true
-                    });
-                }
-            } else {
-                // If not logged in, load from local storage
-                const localData = {};
-                BOOKS.forEach(book => {
-                    for (let i = 1; i < book.numChapters + 1; i++) {
-                        const chapterKey = book.name + "_" + i;
-                        localData[chapterKey] = localStorage.getItem(chapterKey) === "true";
-                    }
-                });
-                setReadStatus(localData);
-            }
-        };
-
-        loadData();
-    }, [user]);
-
-    const handleChapterClick = async (bookName, chapter) => {
-        const chapterKey = `${bookName}_${chapter}`;
-        const newStatus = !readStatus[chapterKey];
-        
-        // Update local state immediately
-        setReadStatus(prev => ({
-            ...prev,
-            [chapterKey]: newStatus
-        }));
-
-        if (user) {
-            // If logged in, sync with server
+            setIsLoading(true);
             try {
-                await bible.updateRecords({
-                    ...readStatus,
-                    [chapterKey]: newStatus
-                });
-                setSyncStatus({
-                    message: 'Changes saved to server',
-                    severity: 'success',
-                    open: true
-                });
+                if (signInCheckResult?.signedIn) {
+                    // If logged in, load from server
+                    const response = await bible.getRecords();
+                    if (response.data && response.data.readStatus) {
+                        setReadStatus(response.data.readStatus);
+                    }
+                } else {
+                    // If not logged in, load from local storage
+                    const localData = {};
+                    BOOKS.forEach(book => {
+                        for (let i = 1; i < book.numChapters + 1; i++) {
+                            const chapterKey = book.name + "_" + i;
+                            localData[chapterKey] = localStorage.getItem(chapterKey) === "true";
+                        }
+                    });
+                    setReadStatus(localData);
+                }
             } catch (error) {
-                console.error('Failed to sync with server:', error);
+                console.error('Failed to load data:', error);
                 setSyncStatus({
-                    message: 'Failed to sync with server',
+                    message: 'Failed to load data',
                     severity: 'error',
                     open: true
                 });
-                // Revert local state on error
-                setReadStatus(prev => ({
-                    ...prev,
-                    [chapterKey]: !newStatus
-                }));
+            } finally {
+                setIsLoading(false);
             }
-        } else {
-            // If not logged in, save to local storage
-            localStorage.setItem(chapterKey, newStatus.toString());
+        };
+
+        if (status === 'success') {
+            loadData();
         }
-    };
+    }, [status, signInCheckResult]);
+
+    if (status === 'loading' || isLoading || readStatus === null) {
+        return (
+            <Box sx={{ 
+                display: 'flex', 
+                justifyContent: 'center', 
+                alignItems: 'center', 
+                height: 'calc(100vh - 64px - 48px)', // 64px for AppMenu, 48px for Footer
+                marginTop: '64px' // Offset for AppMenu
+            }}>
+                <CircularProgress 
+                    color="inherit"
+                    sx={{ 
+                        '& .MuiCircularProgress-circle': {
+                            stroke: currentTheme.primary
+                        }
+                    }} 
+                />
+            </Box>
+        );
+    }
 
     return (
         <Container maxWidth="xl" sx={{
@@ -122,7 +108,12 @@ function Dashboard() {
                         minWidth: { xs: '100%', md: '896px' }
                     }}>
                         {BOOKS1.map(book =>
-                            <BookRecord key={book.name} book={book} readStatus={readStatus} setReadStatus={setReadStatus}/>
+                            <BookRecord 
+                                key={book.name} 
+                                book={book} 
+                                readStatus={readStatus} 
+                                setReadStatus={setReadStatus}
+                            />
                         )}
                     </Box>
                     <Box sx={{
@@ -130,7 +121,12 @@ function Dashboard() {
                         minWidth: { xs: '100%', md: '896px' }
                     }}>
                         {BOOKS2.map(book =>
-                            <BookRecord key={book.name} book={book} readStatus={readStatus} setReadStatus={setReadStatus}/>
+                            <BookRecord 
+                                key={book.name} 
+                                book={book} 
+                                readStatus={readStatus} 
+                                setReadStatus={setReadStatus}
+                            />
                         )}
                     </Box>
                 </Box>
