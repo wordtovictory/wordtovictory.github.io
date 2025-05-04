@@ -28,6 +28,16 @@ function Dashboard() {
                     const response = await bible.getRecords();
                     if (response.data && response.data.readStatus) {
                         setReadStatus(response.data.readStatus);
+                    } else {
+                        // Initialize empty records if none exist
+                        const emptyRecords = {};
+                        BOOKS.forEach(book => {
+                            for (let i = 1; i < book.numChapters + 1; i++) {
+                                const chapterKey = book.name + "_" + i;
+                                emptyRecords[chapterKey] = false;
+                            }
+                        });
+                        setReadStatus(emptyRecords);
                     }
                 } else {
                     // If not logged in, load from local storage
@@ -52,10 +62,13 @@ function Dashboard() {
             }
         };
 
+        // Reset readStatus when auth state changes
+        setReadStatus(null);
+        
         if (status === 'success') {
             loadData();
         }
-    }, [status, signInCheckResult]);
+    }, [status, signInCheckResult?.signedIn]);
 
     if (status === 'loading' || isLoading || readStatus === null) {
         return (
