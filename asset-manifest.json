@@ -1,17 +1,17 @@
 {
   "files": {
     "main.css": "/static/css/main.0bcabfab.css",
-    "main.js": "/static/js/main.a848d554.js",
+    "main.js": "/static/js/main.f54ffbef.js",
     "static/js/453.8ab44547.chunk.js": "/static/js/453.8ab44547.chunk.js",
     "static/media/WordToVictory_dark.png": "/static/media/WordToVictory_dark.599c0c9ca0f10c057cd0.png",
     "static/media/WordToVictory_light.png": "/static/media/WordToVictory_light.256234c487045cacd8e7.png",
     "index.html": "/index.html",
     "main.0bcabfab.css.map": "/static/css/main.0bcabfab.css.map",
-    "main.a848d554.js.map": "/static/js/main.a848d554.js.map",
+    "main.f54ffbef.js.map": "/static/js/main.f54ffbef.js.map",
     "453.8ab44547.chunk.js.map": "/static/js/453.8ab44547.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.0bcabfab.css",
-    "static/js/main.a848d554.js"
+    "static/js/main.f54ffbef.js"
   ]
 }
