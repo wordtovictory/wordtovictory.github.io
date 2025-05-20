@@ -1,17 +1,17 @@
 {
   "files": {
     "main.css": "/static/css/main.0bcabfab.css",
-    "main.js": "/static/js/main.0d758c89.js",
+    "main.js": "/static/js/main.a848d554.js",
     "static/js/453.8ab44547.chunk.js": "/static/js/453.8ab44547.chunk.js",
-    "static/media/BibleTrack_cropped.png": "/static/media/BibleTrack_cropped.bcf078ae26321b471dcb.png",
-    "static/media/BibleTrack_cropped_dark.png": "/static/media/BibleTrack_cropped_dark.5c37fb366737ac9027e2.png",
+    "static/media/WordToVictory_dark.png": "/static/media/WordToVictory_dark.599c0c9ca0f10c057cd0.png",
+    "static/media/WordToVictory_light.png": "/static/media/WordToVictory_light.256234c487045cacd8e7.png",
     "index.html": "/index.html",
     "main.0bcabfab.css.map": "/static/css/main.0bcabfab.css.map",
-    "main.0d758c89.js.map": "/static/js/main.0d758c89.js.map",
+    "main.a848d554.js.map": "/static/js/main.a848d554.js.map",
     "453.8ab44547.chunk.js.map": "/static/js/453.8ab44547.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.0bcabfab.css",
-    "static/js/main.0d758c89.js"
+    "static/js/main.a848d554.js"
   ]
 }
