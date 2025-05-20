@@ -10,7 +10,7 @@ import Login from './pages/Login';
 import Registration from './pages/Registration';
 import Statistics from './pages/Statistics';
 import Profile from './pages/Profile';
-import { FirebaseAppProvider, AuthProvider, useAuth, useSigninCheck } from 'reactfire';
+import { FirebaseAppProvider, AuthProvider, useSigninCheck } from 'reactfire';
 import { initializeApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
 import { bible } from './services/api';
@@ -51,7 +51,7 @@ function AppContent({ readStatus, setReadStatus }) {
     );
 }
 
-function AppWrapper({ isLoggedIn, setIsLoggedIn }) {
+function AppWrapper() {
     const { currentTheme } = useTheme();
     const { status, data: signInCheckResult } = useSigninCheck();
     const [readStatus, setReadStatus] = useState(null);
@@ -103,13 +103,6 @@ function AppWrapper({ isLoggedIn, setIsLoggedIn }) {
         }
     }, [status, signInCheckResult?.signedIn]);
     
-    // Update isLoggedIn state when Firebase auth state changes
-    useEffect(() => {
-        if (status === 'success') {
-            setIsLoggedIn(signInCheckResult.signedIn);
-        }
-    }, [status, signInCheckResult, setIsLoggedIn]);
-    
     // Show loading state while checking auth or loading data
     if (status === 'loading' || isLoading || readStatus === null) {
         return (
@@ -140,15 +133,15 @@ function AppWrapper({ isLoggedIn, setIsLoggedIn }) {
             display: 'flex',
             flexDirection: 'column'
         }}>
-            <AppMenu isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />
+            <AppMenu />
             <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
                 <Routes>
-                    <Route path="/login" element={!isLoggedIn ? <Login setIsLoggedIn={setIsLoggedIn} /> : <Navigate to="/dashboard" />} />
-                    <Route path="/register" element={!isLoggedIn ? <Registration setIsLoggedIn={setIsLoggedIn} /> : <Navigate to="/dashboard" />} />
-                    <Route path="/dashboard" element={isLoggedIn ? <Dashboard readStatus={readStatus} setReadStatus={setReadStatus} /> : <Navigate to="/login" />} />
-                    <Route path="/statistics" element={isLoggedIn ? <Statistics readStatus={readStatus} /> : <Navigate to="/login" />} />
-                    <Route path="/profile" element={isLoggedIn ? <Profile /> : <Navigate to="/login" />} />
-                    <Route path="/" element={<Navigate to={isLoggedIn ? "/dashboard" : "/login"} />} />
+                    <Route path="/login" element={!signInCheckResult?.signedIn ? <Login /> : <Navigate to="/dashboard" />} />
+                    <Route path="/register" element={!signInCheckResult?.signedIn ? <Registration /> : <Navigate to="/dashboard" />} />
+                    <Route path="/dashboard" element={signInCheckResult?.signedIn ? <Dashboard readStatus={readStatus} setReadStatus={setReadStatus} /> : <Navigate to="/login" />} />
+                    <Route path="/statistics" element={signInCheckResult?.signedIn ? <Statistics readStatus={readStatus} /> : <Navigate to="/login" />} />
+                    <Route path="/profile" element={signInCheckResult?.signedIn ? <Profile /> : <Navigate to="/login" />} />
+                    <Route path="/" element={<Navigate to={signInCheckResult?.signedIn ? "/dashboard" : "/login"} />} />
                 </Routes>
             </Box>
             <Footer />
@@ -157,14 +150,12 @@ function AppWrapper({ isLoggedIn, setIsLoggedIn }) {
 }
 
 function App() {
-    const [isLoggedIn, setIsLoggedIn] = useState(false);
-
     return (
         <FirebaseAppProvider firebaseConfig={firebaseConfig}>
             <AuthProvider sdk={auth}>
                 <Router>
                     <ThemeProvider>
-                        <AppWrapper isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />
+                        <AppWrapper />
                     </ThemeProvider>
                 </Router>
             </AuthProvider>

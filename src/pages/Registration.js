@@ -19,7 +19,7 @@ import ErrorIcon from '@mui/icons-material/Error';
 import { useAuth } from 'reactfire';
 import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
 
-function Registration({ setIsLoggedIn }) {
+function Registration() {
     const [formData, setFormData] = useState({
         name: '',
         email: '',
@@ -83,7 +83,6 @@ function Registration({ setIsLoggedIn }) {
                 displayName: formData.name
             });
 
-            setIsLoggedIn(true);
             navigate('/dashboard');
         } catch (error) {
             setError(error.message);

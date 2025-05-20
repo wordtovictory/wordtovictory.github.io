@@ -14,7 +14,7 @@ import {
 import { bible } from '../services/api';
 import { BOOKS } from '../bible/constants.ts';
 
-function Login({ setIsLoggedIn }) {
+function Login() {
     const [formData, setFormData] = useState({
         email: '',
         password: '',
@@ -115,7 +115,6 @@ function Login({ setIsLoggedIn }) {
                 await bible.updateRecords(initialReadStatus);
             }
             
-            setIsLoggedIn(true);
             navigate('/dashboard');
         } catch (error) {
             setError(error.message);
@@ -154,7 +153,6 @@ function Login({ setIsLoggedIn }) {
             // Save initial records to the server
             await bible.updateRecords(initialReadStatus);
             
-            setIsLoggedIn(true);
             navigate('/dashboard');
         } catch (error) {
             setError(error.message);
@@ -162,10 +160,8 @@ function Login({ setIsLoggedIn }) {
         }
     };
 
-    // If already signed in, redirect to dashboard
     if (status === 'success' && signInCheckResult.signedIn) {
-        navigate('/dashboard');
-        return null;
+        return null; // Already logged in, will be redirected
     }
 
     return (

@@ -27,10 +27,10 @@ import DashboardIcon from '@mui/icons-material/Dashboard';
 import BarChartIcon from '@mui/icons-material/BarChart';
 import LogoutIcon from '@mui/icons-material/Logout';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from 'reactfire';
+import { useAuth, useSigninCheck } from 'reactfire';
 import { signOut } from 'firebase/auth';
 
-export default function AppMenu({ isLoggedIn, setIsLoggedIn }) {
+export default function AppMenu() {
     const { currentTheme, toggleTheme, fillBoxes, toggleFillBoxes } = useTheme();
     const isDarkMode = currentTheme === appThemes.darkOrange;
     const [anchorEl, setAnchorEl] = useState(null);
@@ -38,6 +38,7 @@ export default function AppMenu({ isLoggedIn, setIsLoggedIn }) {
     const open = Boolean(anchorEl);
     const navigate = useNavigate();
     const auth = useAuth();
+    const { data: signInCheckResult } = useSigninCheck();
 
     const handleClick = (event) => {
         setAnchorEl(event.currentTarget);
@@ -54,7 +55,6 @@ export default function AppMenu({ isLoggedIn, setIsLoggedIn }) {
     const handleLogout = async () => {
         try {
             await signOut(auth);
-            setIsLoggedIn(false);
             navigate('/login');
             handleClose();
         } catch (error) {
@@ -172,7 +172,7 @@ export default function AppMenu({ isLoggedIn, setIsLoggedIn }) {
                     style={{ cursor: 'pointer' }}
                 />
                 <Box sx={{ flexGrow: 1 }} />
-                {isLoggedIn ? (
+                {signInCheckResult?.signedIn ? (
                     <IconButton
                         onClick={handleClick}
                         sx={{ color: currentTheme.appMenu.textColor }}
@@ -213,7 +213,7 @@ export default function AppMenu({ isLoggedIn, setIsLoggedIn }) {
                         }
                     }}
                 >
-                    {isLoggedIn && (
+                    {signInCheckResult?.signedIn && (
                         <MenuItem onClick={() => navigate('/profile')}>
                             Profile
                         </MenuItem>
@@ -242,7 +242,7 @@ export default function AppMenu({ isLoggedIn, setIsLoggedIn }) {
                             label="Fill Empty Spaces"
                         />
                     </MenuItem>
-                    {isLoggedIn && (
+                    {signInCheckResult?.signedIn && (
                         <MenuItem>
                             <Button 
                                 variant="contained"
