@@ -166,12 +166,83 @@ export default function StatisticsPanel(props) {
             </Box>
 
             {/* Row 3: Gospels, Church History, Paul's Letters, General Letters, Prophecy */}
-            <Box sx={{ display: 'flex', justifyContent: 'center', gap: 2 }}>
+            <Box sx={{ display: 'flex', justifyContent: 'center', gap: 2, mb: 2 }}>
                 <StatItem title={categoryStats[7].name} stats={categoryStats[7].stats} />
                 <StatItem title={categoryStats[8].name} stats={categoryStats[8].stats} />
                 <StatItem title={categoryStats[9].name} stats={categoryStats[9].stats} />
                 <StatItem title={categoryStats[10].name} stats={categoryStats[10].stats} />
                 <StatItem title={categoryStats[11].name} stats={categoryStats[11].stats} />
+            </Box>
+
+            <Typography variant="h5" sx={{ color: currentTheme.text, mb: 3, textAlign: 'center' }}>
+                Book Progress
+            </Typography>
+            
+            <Box sx={{ 
+                display: 'flex', 
+                flexWrap: 'wrap', 
+                justifyContent: 'center', 
+                gap: 2,
+                maxWidth: '1200px',
+                margin: '0 auto'
+            }}>
+                {BOOKS.map(book => {
+                    const bookStats = calculateStats([book]);
+                    // Calculate color based on percentage
+                    const percentage = bookStats.percentage;
+                    const greyColor = '#808080'; // Grey color
+                    const orangeColor = '#FFA500'; // Orange color
+                    
+                    // Function to interpolate between two colors based on percentage
+                    const interpolateColor = (color1, color2, factor) => {
+                        const result = color1.match(/\w\w/g).map((c, i) => {
+                            const c1 = parseInt(c, 16);
+                            const c2 = parseInt(color2.match(/\w\w/g)[i], 16);
+                            const value = Math.round(c1 + (c2 - c1) * factor);
+                            return value.toString(16).padStart(2, '0');
+                        });
+                        return `#${result.join('')}`;
+                    };
+
+                    const backgroundColor = interpolateColor(greyColor, orangeColor, percentage / 100);
+                    
+                    return (
+                        <Box key={book.name} sx={{ 
+                            backgroundColor: backgroundColor,
+                            p: 1.5,
+                            borderRadius: 1,
+                            width: 180,
+                            minWidth: 180,
+                            height: 80,
+                            display: 'flex',
+                            flexDirection: 'column',
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                            transition: 'background-color 0.3s ease',
+                            '&:hover': {
+                                transform: 'scale(1.02)',
+                                transition: 'transform 0.2s ease'
+                            }
+                        }}>
+                            <Typography variant="subtitle1" sx={{ 
+                                color: '#FFFFFF', 
+                                fontWeight: 'bold',
+                                textAlign: 'center',
+                                mb: 0.5
+                            }}>
+                                {book.name}
+                            </Typography>
+                            <Typography sx={{ 
+                                color: '#FFFFFF',
+                                textAlign: 'center',
+                                fontSize: '0.875rem',
+                                fontWeight: 'medium'
+                            }}>
+                                {bookStats.read} of {bookStats.total} ({percentage.toFixed(1)}%)
+                            </Typography>
+                        </Box>
+                    );
+                })}
             </Box>
         </Box>
     );
