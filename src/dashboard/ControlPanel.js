@@ -4,14 +4,16 @@ import {Box} from "@mui/material";
 import exportFromJSON from "export-from-json";
 import {BOOKS} from '../bible/constants.ts';
 import { useTheme } from '../theme/ThemeContext';
-import { useSigninCheck } from 'reactfire';
-import { bible } from '../services/api';
+import { useSigninCheck, useUser } from 'reactfire';
+import { useBibleService } from '../services/BibleServiceContext';
 
 export default function ControlPanel(props) {
     const { currentTheme } = useTheme();
     const {readStatus, setReadStatus} = props;
     const inputRef = useRef(null);
     const { status, data: signInCheckResult } = useSigninCheck();
+    const { data: user } = useUser();
+    const bibleService = useBibleService();
 
     const getButtonColor = () => {
         return currentTheme.buttonColor;
@@ -44,8 +46,8 @@ export default function ControlPanel(props) {
                 setReadStatus(newReadStatus);
                 
                 if (signInCheckResult?.signedIn) {
-                    // If logged in, sync with server
-                    await bible.updateRecords(newReadStatus);
+                    // If logged in, sync with service
+                    await bibleService.updateBibleRecords(user.uid, newReadStatus);
                 } else {
                     // If not logged in, save to local storage
                     Object.entries(newReadStatus).forEach(

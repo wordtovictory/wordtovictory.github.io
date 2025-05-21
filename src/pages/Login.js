@@ -11,8 +11,8 @@ import {
     updateProfile,
     sendPasswordResetEmail
 } from 'firebase/auth';
-import { bible } from '../services/api';
 import { BOOKS } from '../bible/constants.ts';
+import { useBibleService } from '../services/BibleServiceContext';
 
 function Login() {
     const [formData, setFormData] = useState({
@@ -26,6 +26,7 @@ function Login() {
     const { currentTheme } = useTheme();
     const navigate = useNavigate();
     const auth = useAuth();
+    const bibleService = useBibleService();
 
     const { status, data: signInCheckResult } = useSigninCheck();
 
@@ -111,8 +112,8 @@ function Login() {
                     }
                 });
 
-                // Save initial records to the server
-                await bible.updateRecords(initialReadStatus);
+                // Save initial records to the service
+                await bibleService.updateBibleRecords(user.uid, initialReadStatus);
             }
             
             navigate('/dashboard');
@@ -150,8 +151,8 @@ function Login() {
                 }
             });
 
-            // Save initial records to the server
-            await bible.updateRecords(initialReadStatus);
+            // Save initial records to the service
+            await bibleService.updateBibleRecords(user.uid, initialReadStatus);
             
             navigate('/dashboard');
         } catch (error) {

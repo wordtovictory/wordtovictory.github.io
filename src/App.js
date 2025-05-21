@@ -11,23 +11,8 @@ import Registration from './pages/Registration';
 import Statistics from './pages/Statistics';
 import Profile from './pages/Profile';
 import { FirebaseAppProvider, AuthProvider, useSigninCheck } from 'reactfire';
-import { initializeApp } from 'firebase/app';
-import { getAuth } from 'firebase/auth';
-import { bible } from './services/api';
 import { BOOKS } from './bible/constants.ts';
-
-const firebaseConfig = {
-    apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
-    authDomain: process.env.REACT_APP_FIREBASE_AUTH_DOMAIN,
-    projectId: process.env.REACT_APP_FIREBASE_PROJECT_ID,
-    storageBucket: process.env.REACT_APP_FIREBASE_STORAGE_BUCKET,
-    messagingSenderId: process.env.REACT_APP_FIREBASE_MESSAGING_SENDER_ID,
-    appId: process.env.REACT_APP_FIREBASE_APP_ID
-};
-
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
+import { BibleServiceProvider, useBibleService, app, auth } from './services/BibleServiceContext';
 
 function AppContent({ readStatus, setReadStatus }) {
     const { currentTheme } = useTheme();
@@ -56,52 +41,111 @@ function AppWrapper() {
     const { status, data: signInCheckResult } = useSigninCheck();
     const [readStatus, setReadStatus] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
+    const bibleService = useBibleService();
 
     useEffect(() => {
+        let isMounted = true;
+
         const loadData = async () => {
             setIsLoading(true);
             try {
                 if (signInCheckResult?.signedIn) {
-                    // If logged in, load from server
-                    const response = await bible.getRecords();
-                    if (response.data && response.data.readStatus) {
-                        setReadStatus(response.data.readStatus);
-                    } else {
-                        // Initialize empty records if none exist
-                        const emptyRecords = {};
-                        BOOKS.forEach(book => {
-                            for (let i = 1; i < book.numChapters + 1; i++) {
-                                const chapterKey = book.name + "_" + i;
-                                emptyRecords[chapterKey] = false;
-                            }
-                        });
-                        setReadStatus(emptyRecords);
+                    // If logged in, load from service
+                    const userId = signInCheckResult.user.uid;
+                    console.log('Loading data for user:', userId);
+                    
+                    const records = await bibleService.getBibleRecords(userId);
+                    console.log('Received records from service:', records);
+                    
+                    // Only update state if component is still mounted
+                    if (isMounted) {
+                        // If we have records, use them
+                        if (records && Object.keys(records).length > 0) {
+                            console.log('Using existing records from Firebase');
+                            setReadStatus(records);
+                        } else {
+                            // Only initialize empty records if there are truly no records
+                            console.log('No existing records found, initializing empty records');
+                            const emptyRecords = {};
+                            BOOKS.forEach(book => {
+                                for (let i = 1; i < book.numChapters + 1; i++) {
+                                    const chapterKey = book.name + "_" + i;
+                                    emptyRecords[chapterKey] = false;
+                                }
+                            });
+                            console.log('Created empty records:', emptyRecords);
+                            setReadStatus(emptyRecords);
+                            
+                            // Only save empty records if there are truly no records
+                            console.log('Saving empty records to Firebase');
+                            await bibleService.updateBibleRecords(userId, emptyRecords);
+                        }
                     }
                 } else {
                     // If not logged in, load from local storage
-                    const localData = {};
-                    BOOKS.forEach(book => {
-                        for (let i = 1; i < book.numChapters + 1; i++) {
-                            const chapterKey = book.name + "_" + i;
-                            localData[chapterKey] = localStorage.getItem(chapterKey) === "true";
-                        }
-                    });
-                    setReadStatus(localData);
+                    if (isMounted) {
+                        console.log('Loading data from local storage');
+                        const localData = {};
+                        BOOKS.forEach(book => {
+                            for (let i = 1; i < book.numChapters + 1; i++) {
+                                const chapterKey = book.name + "_" + i;
+                                localData[chapterKey] = localStorage.getItem(chapterKey) === "true";
+                            }
+                        });
+                        console.log('Loaded local data:', localData);
+                        setReadStatus(localData);
+                    }
                 }
             } catch (error) {
                 console.error('Failed to load data:', error);
             } finally {
-                setIsLoading(false);
+                if (isMounted) {
+                    setIsLoading(false);
+                }
             }
         };
 
         // Reset readStatus when auth state changes
-        setReadStatus(null);
+        if (isMounted) {
+            console.log('Resetting readStatus due to auth state change');
+            setReadStatus(null);
+        }
         
         if (status === 'success') {
+            console.log('Auth status is success, loading data');
             loadData();
         }
-    }, [status, signInCheckResult?.signedIn]);
+
+        // Cleanup function
+        return () => {
+            console.log('Component unmounting, cleaning up');
+            isMounted = false;
+        };
+    }, [status, signInCheckResult?.signedIn, bibleService]);
+
+    const handleReadStatusUpdate = async (newReadStatus) => {
+        try {
+            if (signInCheckResult?.signedIn) {
+                // If logged in, save to service
+                const userId = signInCheckResult.user.uid;
+                console.log('Updating read status for user:', userId);
+                console.log('New read status:', newReadStatus);
+                
+                // Create a new object with just the read status data
+                const readStatusData = { ...newReadStatus };
+                await bibleService.updateBibleRecords(userId, readStatusData);
+            } else {
+                // If not logged in, save to local storage
+                console.log('Saving to local storage:', newReadStatus);
+                Object.entries(newReadStatus).forEach(([key, value]) => {
+                    localStorage.setItem(key, value.toString());
+                });
+            }
+            setReadStatus(newReadStatus);
+        } catch (error) {
+            console.error('Failed to update data:', error);
+        }
+    };
     
     // Show loading state while checking auth or loading data
     if (status === 'loading' || isLoading || readStatus === null) {
@@ -138,7 +182,7 @@ function AppWrapper() {
                 <Routes>
                     <Route path="/login" element={!signInCheckResult?.signedIn ? <Login /> : <Navigate to="/dashboard" />} />
                     <Route path="/register" element={!signInCheckResult?.signedIn ? <Registration /> : <Navigate to="/dashboard" />} />
-                    <Route path="/dashboard" element={signInCheckResult?.signedIn ? <Dashboard readStatus={readStatus} setReadStatus={setReadStatus} /> : <Navigate to="/login" />} />
+                    <Route path="/dashboard" element={signInCheckResult?.signedIn ? <Dashboard readStatus={readStatus} setReadStatus={handleReadStatusUpdate} /> : <Navigate to="/login" />} />
                     <Route path="/statistics" element={signInCheckResult?.signedIn ? <Statistics readStatus={readStatus} /> : <Navigate to="/login" />} />
                     <Route path="/profile" element={signInCheckResult?.signedIn ? <Profile /> : <Navigate to="/login" />} />
                     <Route path="/" element={<Navigate to={signInCheckResult?.signedIn ? "/dashboard" : "/login"} />} />
@@ -151,11 +195,13 @@ function AppWrapper() {
 
 function App() {
     return (
-        <FirebaseAppProvider firebaseConfig={firebaseConfig}>
+        <FirebaseAppProvider firebaseApp={app}>
             <AuthProvider sdk={auth}>
                 <Router>
                     <ThemeProvider>
-                        <AppWrapper />
+                        <BibleServiceProvider>
+                            <AppWrapper />
+                        </BibleServiceProvider>
                     </ThemeProvider>
                 </Router>
             </AuthProvider>
