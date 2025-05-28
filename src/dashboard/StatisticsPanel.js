@@ -137,7 +137,9 @@ export default function StatisticsPanel(props) {
     return (
         <Box sx={{ 
             backgroundColor: currentTheme.background, 
-            p: 2
+            p: 2,
+            width: '100%',
+            overflow: 'hidden'
         }}>
             <Typography variant="h5" sx={{ color: currentTheme.text, mb: 3, textAlign: 'center' }}>
                 Overall Progress
@@ -182,89 +184,106 @@ export default function StatisticsPanel(props) {
                 display: 'flex', 
                 flexDirection: 'column',
                 gap: 4,
-                maxWidth: '1200px',
-                margin: '0 auto'
+                width: '100%',
+                overflow: 'hidden'
             }}>
                 {Object.entries(categories)
                     .filter(([key]) => key !== 'oldTestament' && key !== 'newTestament')
                     .map(([key, category]) => (
-                    <Box key={key}>
-                        <Typography variant="h6" sx={{ 
-                            color: currentTheme.text, 
-                            mb: 2, 
-                            textAlign: 'left',
-                            borderBottom: `2px solid ${currentTheme.button.border}`,
-                            pb: 1,
-                            width: 'fit-content',
-                            maxWidth: 'calc(180px * 5 + 16px)', // 5 rectangles (180px each) + 4 gaps (4px each)
-                            marginLeft: 'calc(50% - (180px * 2.5 + 8px))' // Align with first rectangle
-                        }}>
-                            {category.name}
-                        </Typography>
+                    <Box key={key} sx={{ width: '100%', overflow: 'hidden' }}>
                         <Box sx={{ 
-                            display: 'flex', 
-                            flexWrap: 'wrap', 
-                            gap: 2,
-                            marginLeft: 'calc(50% - (180px * 2.5 + 8px))', // Centers the 3rd rectangle
-                            width: 'calc(180px * 5 + 16px)' // Force 5 rectangles per row
+                            width: '100%',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: {
+                                xs: 'flex-start',
+                                md: 'center'
+                            }
                         }}>
-                            {category.books.map(book => {
-                                const bookStats = calculateStats([book]);
-                                // Calculate color based on percentage
-                                const percentage = bookStats.percentage;
-                                const greyColor = '#808080'; // Grey color
-                                const orangeColor = '#FFA500'; // Orange color
-                                
-                                // Function to interpolate between two colors based on percentage
-                                const interpolateColor = (color1, color2, factor) => {
-                                    const result = color1.match(/\w\w/g).map((c, i) => {
-                                        const c1 = parseInt(c, 16);
-                                        const c2 = parseInt(color2.match(/\w\w/g)[i], 16);
-                                        const value = Math.round(c1 + (c2 - c1) * factor);
-                                        return value.toString(16).padStart(2, '0');
-                                    });
-                                    return `#${result.join('')}`;
-                                };
+                            <Typography variant="h6" sx={{ 
+                                color: currentTheme.text, 
+                                mb: 2, 
+                                textAlign: 'left',
+                                borderBottom: `2px solid ${currentTheme.button.border}`,
+                                pb: 1,
+                                width: {
+                                    xs: '100%',
+                                    md: 'calc(180px * 5 + 16px)'
+                                }
+                            }}>
+                                {category.name}
+                            </Typography>
+                            <Box sx={{ 
+                                width: 'calc(180px * 4 + 12px)',
+                                margin: '0 auto'
+                            }}>
+                                <Grid container spacing={2}>
+                                    {category.books.map(book => {
+                                        const bookStats = calculateStats([book]);
+                                        const percentage = bookStats.percentage;
+                                        const greyColor = '#808080';
+                                        const orangeColor = '#FFA500';
+                                        
+                                        const interpolateColor = (color1, color2, factor) => {
+                                            const result = color1.match(/\w\w/g).map((c, i) => {
+                                                const c1 = parseInt(c, 16);
+                                                const c2 = parseInt(color2.match(/\w\w/g)[i], 16);
+                                                const value = Math.round(c1 + (c2 - c1) * factor);
+                                                return value.toString(16).padStart(2, '0');
+                                            });
+                                            return `#${result.join('')}`;
+                                        };
 
-                                const backgroundColor = interpolateColor(greyColor, orangeColor, percentage / 100);
-                                
-                                return (
-                                    <Box key={book.name} sx={{ 
-                                        backgroundColor: backgroundColor,
-                                        p: 1.5,
-                                        borderRadius: 1,
-                                        width: 180,
-                                        minWidth: 180,
-                                        height: 80,
-                                        display: 'flex',
-                                        flexDirection: 'column',
-                                        justifyContent: 'center',
-                                        alignItems: 'center',
-                                        transition: 'background-color 0.3s ease',
-                                        '&:hover': {
-                                            transform: 'scale(1.02)',
-                                            transition: 'transform 0.2s ease'
-                                        }
-                                    }}>
-                                        <Typography variant="subtitle1" sx={{ 
-                                            color: '#FFFFFF', 
-                                            fontWeight: 'bold',
-                                            textAlign: 'center',
-                                            mb: 0.5
-                                        }}>
-                                            {book.name}
-                                        </Typography>
-                                        <Typography sx={{ 
-                                            color: '#FFFFFF',
-                                            textAlign: 'center',
-                                            fontSize: '0.875rem',
-                                            fontWeight: 'medium'
-                                        }}>
-                                            {bookStats.read} of {bookStats.total} ({percentage.toFixed(1)}%)
-                                        </Typography>
-                                    </Box>
-                                );
-                            })}
+                                        const backgroundColor = interpolateColor(greyColor, orangeColor, percentage / 100);
+                                        
+                                        return (
+                                            <Grid item xs={3} key={book.name}>
+                                                <Box sx={{ 
+                                                    backgroundColor: backgroundColor,
+                                                    p: 1.5,
+                                                    borderRadius: 1,
+                                                    width: 180,
+                                                    minWidth: 180,
+                                                    height: 80,
+                                                    display: 'flex',
+                                                    flexDirection: 'column',
+                                                    justifyContent: 'center',
+                                                    alignItems: 'center',
+                                                    transition: 'background-color 0.3s ease',
+                                                    '&:hover': {
+                                                        transform: 'scale(1.02)',
+                                                        transition: 'transform 0.2s ease'
+                                                    }
+                                                }}>
+                                                    <Typography variant="subtitle1" sx={{ 
+                                                        color: '#FFFFFF', 
+                                                        fontWeight: 'bold',
+                                                        textAlign: 'center',
+                                                        mb: 0.5,
+                                                        fontSize: {
+                                                            xs: '0.875rem',
+                                                            md: '1rem'
+                                                        }
+                                                    }}>
+                                                        {book.name}
+                                                    </Typography>
+                                                    <Typography sx={{ 
+                                                        color: '#FFFFFF',
+                                                        textAlign: 'center',
+                                                        fontSize: {
+                                                            xs: '0.75rem',
+                                                            md: '0.875rem'
+                                                        },
+                                                        fontWeight: 'medium'
+                                                    }}>
+                                                        {bookStats.read} of {bookStats.total} ({percentage.toFixed(1)}%)
+                                                    </Typography>
+                                                </Box>
+                                            </Grid>
+                                        );
+                                    })}
+                                </Grid>
+                            </Box>
                         </Box>
                     </Box>
                 ))}
