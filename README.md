@@ -68,3 +68,46 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/d
 ### `npm run build` fails to minify
 
 This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+
+## Environment Setup
+
+### Backend Setup
+1. Create a `.env` file in the `server` directory
+2. Copy the contents from `server/.env.example`
+3. Fill in your actual values:
+   - `MONGODB_URI`: Your MongoDB Atlas connection string
+   - `JWT_SECRET`: A secure random string for JWT token generation
+   - `PORT`: The port your server will run on (default: 5000)
+
+### Frontend Setup
+1. Create a `.env` file in the root directory
+2. Set `REACT_APP_API_URL` if your API is hosted at a different URL
+
+### Security Notes
+- Never commit `.env` files to version control
+- Keep your MongoDB Atlas credentials secure
+- Use a strong JWT secret
+- Regularly rotate your secrets and credentials
+
+## Development
+1. Install dependencies:
+   ```bash
+   # Install backend dependencies
+   cd server
+   npm install
+
+   # Install frontend dependencies
+   cd ..
+   npm install
+   ```
+
+2. Start the development servers:
+   ```bash
+   # Start backend server
+   cd server
+   npm run dev
+
+   # Start frontend server (in a new terminal)
+   cd ..
+   npm start
+   ```

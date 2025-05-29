@@ -1,39 +1,178 @@
 import '../App.css';
-import {Box} from "@mui/material";
+import {Box, Grid, Typography} from "@mui/material";
 import {CircularProgressbar} from "react-circular-progressbar";
 import 'react-circular-progressbar/dist/styles.css';
 import { useTheme } from '../theme/ThemeContext';
+import { BOOKS } from '../bible/constants.ts';
+
+// Define book categories
+const categories = {
+    oldTestament: {
+        name: "Old Testament",
+        books: BOOKS.slice(0, 39)  // Genesis to Malachi
+    },
+    newTestament: {
+        name: "New Testament",
+        books: BOOKS.slice(39)  // Matthew to Revelation
+    },
+    law: {
+        name: "The Law",
+        books: BOOKS.slice(0, 5)  // Genesis to Deuteronomy
+    },
+    history: {
+        name: "History",
+        books: BOOKS.slice(5, 17)  // Joshua to Esther
+    },
+    wisdom: {
+        name: "Wisdom",
+        books: BOOKS.slice(17, 22)  // Job to Song of Songs
+    },
+    majorProphets: {
+        name: "Major Prophets",
+        books: BOOKS.slice(22, 27)  // Isaiah to Daniel
+    },
+    minorProphets: {
+        name: "Minor Prophets",
+        books: BOOKS.slice(27, 39)  // Hosea to Malachi
+    },
+    gospels: {
+        name: "The Gospels",
+        books: BOOKS.slice(39, 43)  // Matthew to John
+    },
+    churchHistory: {
+        name: "Church History",
+        books: [BOOKS[43]] // Acts
+    },
+    paulsLetters: {
+        name: "Paul's Letters",
+        books: BOOKS.slice(44, 57)  // Romans to Philemon
+    },
+    generalLetters: {
+        name: "General Letters",
+        books: BOOKS.slice(57, 65)  // Hebrews to Jude
+    },
+    prophecy: {
+        name: "Prophecy",
+        books: [BOOKS[65]] // Revelation
+    }
+};
 
 export default function StatisticsPanel(props) {
     const { currentTheme } = useTheme();
     const {readStatus} = props;
 
-    const numChaptersRead = Object.values(readStatus).reduce((a, b) => a + b, 0);
-    const toalChapters = 1189;
+    const calculateStats = (books) => {
+        let totalChapters = 0;
+        let chaptersRead = 0;
 
-    console.log(numChaptersRead);
+        books.forEach(book => {
+            for (let i = 1; i <= book.numChapters; i++) {
+                const chapterKey = book.name + "_" + i;
+                totalChapters++;
+                if (readStatus[chapterKey]) {
+                    chaptersRead++;
+                }
+            }
+        });
 
-    const percentage = numChaptersRead / toalChapters * 100;
+        return {
+            total: totalChapters,
+            read: chaptersRead,
+            percentage: (chaptersRead / totalChapters) * 100
+        };
+    };
+
+    const totalStats = calculateStats(BOOKS);
+    const categoryStats = Object.entries(categories).map(([key, category]) => ({
+        ...category,
+        stats: calculateStats(category.books)
+    }));
+
+    const StatItem = ({ title, stats }) => {
+        // Determine width based on title
+        const isWideCategory = title === "All Books" || title === "Old Testament" || title === "New Testament";
+        const boxWidth = isWideCategory ? 200 : 180;
+        
+        return (
+            <Box sx={{ 
+                backgroundColor: currentTheme.background,
+                p: 1,
+                borderRadius: 1,
+                border: `1px solid ${currentTheme.button.border}`,
+                width: boxWidth,
+                minWidth: boxWidth,
+                height: 165,
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center'
+            }}>
+                <Typography variant="h6" sx={{ color: currentTheme.text, mb: 0.5, textAlign: 'center' }}>
+                    {title}
+                </Typography>
+                <Typography sx={{ color: currentTheme.text, textAlign: 'center' }}>
+                    {stats.read} of {stats.total} chapters read
+                </Typography>
+                <div style={{width: 90, height: 90, margin: '5px auto'}}>
+                    <CircularProgressbar 
+                        value={stats.percentage} 
+                        text={`${stats.percentage.toFixed(1)}%`}
+                        styles={{
+                            path: {
+                                stroke: currentTheme.primary,
+                            },
+                            text: {
+                                fill: currentTheme.text,
+                                fontSize: '12px'
+                            },
+                            trail: {
+                                stroke: currentTheme.progressTrail
+                            }
+                        }}
+                    />
+                </div>
+            </Box>
+        );
+    };
+
     return (
-        <Box sx={{ backgroundColor: currentTheme.background }}>
-            <p style={{ color: currentTheme.text }}>{numChaptersRead} of {toalChapters} chapters read</p>
-            <div style={{width: 200, height: 200}}>
-                <CircularProgressbar 
-                    value={percentage} 
-                    text={`${percentage.toFixed(1)}%`}
-                    styles={{
-                        path: {
-                            stroke: currentTheme.primary,
-                        },
-                        text: {
-                            fill: currentTheme.text,
-                        },
-                        trail: {
-                            stroke: currentTheme.progressTrail
-                        }
-                    }}
-                />
-            </div>
+        <Box sx={{ 
+            backgroundColor: currentTheme.background, 
+            p: 2
+        }}>
+            <Typography variant="h5" sx={{ color: currentTheme.text, mb: 3, textAlign: 'center' }}>
+                Overall Progress
+            </Typography>
+            <Box sx={{ display: 'flex', justifyContent: 'center', mb: 4 }}>
+                <StatItem title="All Books" stats={totalStats} />
+            </Box>
+            
+            <Typography variant="h5" sx={{ color: currentTheme.text, mb: 3, textAlign: 'center' }}>
+                Category Progress
+            </Typography>
+            
+            {/* Row 1: Old and New Testament */}
+            <Box sx={{ display: 'flex', justifyContent: 'center', gap: 2, mb: 2 }}>
+                <StatItem title={categoryStats[0].name} stats={categoryStats[0].stats} />
+                <StatItem title={categoryStats[1].name} stats={categoryStats[1].stats} />
+            </Box>
+
+            {/* Row 2: Law, History, Wisdom, Major Prophets, Minor Prophets */}
+            <Box sx={{ display: 'flex', justifyContent: 'center', gap: 2, mb: 2 }}>
+                <StatItem title={categoryStats[2].name} stats={categoryStats[2].stats} />
+                <StatItem title={categoryStats[3].name} stats={categoryStats[3].stats} />
+                <StatItem title={categoryStats[4].name} stats={categoryStats[4].stats} />
+                <StatItem title={categoryStats[5].name} stats={categoryStats[5].stats} />
+                <StatItem title={categoryStats[6].name} stats={categoryStats[6].stats} />
+            </Box>
+
+            {/* Row 3: Gospels, Church History, Paul's Letters, General Letters, Prophecy */}
+            <Box sx={{ display: 'flex', justifyContent: 'center', gap: 2 }}>
+                <StatItem title={categoryStats[7].name} stats={categoryStats[7].stats} />
+                <StatItem title={categoryStats[8].name} stats={categoryStats[8].stats} />
+                <StatItem title={categoryStats[9].name} stats={categoryStats[9].stats} />
+                <StatItem title={categoryStats[10].name} stats={categoryStats[10].stats} />
+                <StatItem title={categoryStats[11].name} stats={categoryStats[11].stats} />
+            </Box>
         </Box>
     );
 }
