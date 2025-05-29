@@ -80,14 +80,34 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/t
    - `PORT`: The port your server will run on (default: 5000)
 
 ### Frontend Setup
-1. Create a `.env` file in the root directory
-2. Set `REACT_APP_API_URL` if your API is hosted at a different URL
+1. Create a `.env` file in the root directory with the following variables:
+   ```
+   # Firebase Configuration
+   REACT_APP_FIREBASE_API_KEY=your_api_key
+   REACT_APP_FIREBASE_AUTH_DOMAIN=your_auth_domain
+   REACT_APP_FIREBASE_PROJECT_ID=your_project_id
+   REACT_APP_FIREBASE_STORAGE_BUCKET=your_storage_bucket
+   REACT_APP_FIREBASE_MESSAGING_SENDER_ID=your_messaging_sender_id
+   REACT_APP_FIREBASE_APP_ID=your_app_id
+
+   # Service Configuration
+   REACT_APP_SERVICE_TYPE=firebase  # or 'mongodb'
+   REACT_APP_API_URL=http://localhost:5000/api  # Only needed if using MongoDB
+   ```
+
+2. Get your Firebase configuration:
+   - Go to the [Firebase Console](https://console.firebase.google.com/)
+   - Create a new project or select an existing one
+   - Go to Project Settings
+   - Under "Your apps", click the web icon (</>)
+   - Register your app and copy the configuration values
 
 ### Security Notes
 - Never commit `.env` files to version control
 - Keep your MongoDB Atlas credentials secure
 - Use a strong JWT secret
 - Regularly rotate your secrets and credentials
+- Keep your Firebase configuration secure
 
 ## Development
 1. Install dependencies:
@@ -103,7 +123,7 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/t
 
 2. Start the development servers:
    ```bash
-   # Start backend server
+   # Start backend server (only needed if using MongoDB)
    cd server
    npm run dev
 
@@ -111,3 +131,17 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/t
    cd ..
    npm start
    ```
+
+## Switching Between Backend Services
+
+The application supports both MongoDB and Firebase as backend services. To switch between them:
+
+1. Set `REACT_APP_SERVICE_TYPE` in your `.env` file to either:
+   - `firebase` for Firebase backend
+   - `mongodb` for MongoDB backend
+
+2. If using MongoDB, ensure the backend server is running and `REACT_APP_API_URL` is set correctly.
+
+3. If using Firebase, ensure all Firebase configuration variables are set in your `.env` file.
+
+The application will automatically use the configured service without requiring any code changes.

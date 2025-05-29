@@ -5,13 +5,14 @@ import { useTheme } from '../theme/ThemeContext';
 import { useTheme as useMuiTheme } from '@mui/material/styles';
 import { useRef, useEffect, useState } from 'react';
 import { useUser } from 'reactfire';
-import { bible } from '../services/api';
+import { useBibleService } from '../services/BibleServiceContext';
 
 export default function BookRecord(props) {
     const { currentTheme, fillBoxes } = useTheme();
     const muiTheme = useMuiTheme();
     const {book, readStatus, setReadStatus} = props;
     const { data: user } = useUser();
+    const bibleService = useBibleService();
     const containerRef = useRef(null);
     const [buttonsPerRow, setButtonsPerRow] = useState(20);
 
@@ -40,14 +41,22 @@ export default function BookRecord(props) {
         }));
 
         if (user) {
-            // If logged in, sync with server
+            // If logged in, sync with service
             try {
-                await bible.updateRecords({
-                    ...readStatus,
-                    [chapterKey]: newStatus
+                // Create a new object with just the read status data
+                const readStatusData = { ...readStatus };
+                readStatusData[chapterKey] = newStatus;
+                
+                console.log('Sending update to Firebase:', {
+                    userId: user.uid,
+                    chapterKey,
+                    newStatus,
+                    readStatusData
                 });
+                
+                await bibleService.updateBibleRecords(user.uid, readStatusData);
             } catch (error) {
-                console.error('Failed to sync with server:', error);
+                console.error('Failed to sync with service:', error);
                 // Revert local state on error
                 setReadStatus(prev => ({
                     ...prev,
