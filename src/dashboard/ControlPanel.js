@@ -4,11 +4,16 @@ import {Box} from "@mui/material";
 import exportFromJSON from "export-from-json";
 import {BOOKS} from '../bible/constants.ts';
 import { useTheme } from '../theme/ThemeContext';
+import { useSigninCheck, useUser } from 'reactfire';
+import { useBibleService } from '../services/BibleServiceContext';
 
 export default function ControlPanel(props) {
     const { currentTheme } = useTheme();
     const {readStatus, setReadStatus} = props;
     const inputRef = useRef(null);
+    const { status, data: signInCheckResult } = useSigninCheck();
+    const { data: user } = useUser();
+    const bibleService = useBibleService();
 
     const getButtonColor = () => {
         return currentTheme.buttonColor;
@@ -30,17 +35,28 @@ export default function ControlPanel(props) {
         exportFromJSON({data, fileName, exportType});
     };
 
-    const handleInputLoad = (event) => {
+    const handleInputLoad = async (event) => {
         if (event.target.files.length) {
-            event.target.files[0]
-                .text()
-                .then((data) => JSON.parse(data))
-                .then((data) => {
-                    setReadStatus(data[0].readStatus);
-                    Object.entries(data[0].readStatus).forEach(
+            try {
+                const data = await event.target.files[0].text();
+                const parsedData = JSON.parse(data);
+                const newReadStatus = parsedData[0].readStatus;
+                
+                // Update local state
+                setReadStatus(newReadStatus);
+                
+                if (signInCheckResult?.signedIn) {
+                    // If logged in, sync with service
+                    await bibleService.updateBibleRecords(user.uid, newReadStatus);
+                } else {
+                    // If not logged in, save to local storage
+                    Object.entries(newReadStatus).forEach(
                         ([key, value]) => localStorage.setItem(key, value)
                     );
-                });
+                }
+            } catch (error) {
+                console.error('Failed to load or sync data:', error);
+            }
         }
     };
 
@@ -52,12 +68,14 @@ export default function ControlPanel(props) {
     const handleClearAll = () => {
         console.log("Clearing all");
         const readStatus = {}
-        BOOKS.map(book => {
-            for (let i = 1; i < book.numChapters + 1; i++) {
-                const chapterKey = book.name + "_" + i;
-                localStorage.setItem(chapterKey, "false");
-            }
-        })
+        if (!localStorage.getItem('token')) {
+            BOOKS.map(book => {
+                for (let i = 1; i < book.numChapters + 1; i++) {
+                    const chapterKey = book.name + "_" + i;
+                    localStorage.setItem(chapterKey, "false");
+                }
+            });
+        }
         console.log(readStatus);
         setReadStatus(readStatus);
     };

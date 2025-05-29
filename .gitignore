@@ -2,14 +2,17 @@
 
 # dependencies
 /node_modules
-/.pnp
-.pnp.js
+/server/node_modules
 
-# testing
-/coverage
+# environment variables
+.env
+/server/.env
+/server/.env.development
+/server/.env.production
 
-# production
+# production build
 /build
+/dist
 
 # misc
 .DS_Store
@@ -18,8 +21,17 @@
 .env.test.local
 .env.production.local
 
+# logs
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-/.idea
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+playground-1.mongodb.js
+
+word-to-victory-dev-firebase-adminsdk-fbsvc-d1e611e4e1.json
